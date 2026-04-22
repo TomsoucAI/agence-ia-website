@@ -1,10 +1,244 @@
 ---
-// Section: Built For (ICP segmentation)
-// Spec reference: agence-ia-site-reference.md §4.5
-// Consumes: siteContent.builtFor.segments from src/content/site.ts
-// Two segments: PME québécoises (active) and Conseillers financiers indépendants (en pause).
+/*
+ * Section: Built For (§4.5 — ICP segmentation)
+ *
+ * Two audience cards: PME québécoises (active) and Conseillers financiers
+ * indépendants (en pause). The paused card must carry a clearly readable
+ * status badge ("Vertical en pause — reprise après stage été 2026"), because
+ * honesty about the paused vertical is itself the trust signal.
+ *
+ * Subtle visual hierarchy: the active card reads slightly more prominently
+ * (amber-tinted wash + solid status badge) while the paused card is
+ * desaturated (muted status pill, lighter face). Not heavy-handed — both
+ * cards remain fully legible and fully valued.
+ *
+ * Adopts Section.astro for padding/rhythm (the first adoption).
+ */
+
+import { siteContent } from '../../content/site';
+import Section from '../ui/Section.astro';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+import Card from '../ui/Card.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { builtFor } = siteContent;
+const { ctas } = builtFor;
+
+// Extended paused-vertical label — not invented copy, it expands the
+// `statusLabel` from site.ts with the resume date called out in the spec §4.5
+// ("Reprise active après le stage d'été 2026"). The spec also appears in
+// segment.description, so no new facts are introduced.
+const pausedBadgeText = 'Vertical en pause — reprise après stage été 2026';
 ---
 
-<section id="built-for" aria-label="Pour qui on construit">
-  <!-- TODO(section-built-for): implement per spec §4.5 -->
-</section>
+<Section id="built-for" ariaLabel="Pour qui on construit" class="built-for">
+  <div class="built-for__top">
+    <SectionHeader
+      eyebrow={builtFor.eyebrow}
+      headline={builtFor.headline}
+      level="h2"
+      scale="section"
+      maxWidth={48}
+      class="built-for__header"
+    />
+    <div class="built-for__top-cta">
+      <CtaPair ctas={ctas} />
+    </div>
+  </div>
+
+  <ul class="built-for__grid" aria-label="Segments de clientèle">
+    {
+      builtFor.segments.map((segment, i) => {
+        const isActive = segment.status === 'active';
+        return (
+          <ScrollReveal
+            client:visible
+            as="li"
+            delay={i * 0.08}
+            className="built-for__cell"
+          >
+            <Card
+              padding="lg"
+              accent={isActive}
+              class:list={[
+                'built-for__card',
+                `built-for__card--${segment.status}`,
+              ]}
+            >
+              <header class="built-for__card-header">
+                <span
+                  class:list={[
+                    'built-for__status',
+                    `built-for__status--${segment.status}`,
+                  ]}
+                >
+                  <span
+                    class="built-for__status-dot"
+                    aria-hidden="true"
+                  ></span>
+                  {isActive ? segment.statusLabel : pausedBadgeText}
+                </span>
+              </header>
+
+              <h3 class="built-for__card-title">{segment.title}</h3>
+              <p class="built-for__card-body">{segment.description}</p>
+
+              {segment.tools && segment.tools.length > 0 && (
+                <div class="built-for__tools">
+                  <span class="built-for__tools-label">Outils typiques</span>
+                  <ul class="built-for__tools-list">
+                    {segment.tools.map((tool) => (
+                      <li class="built-for__tool">{tool}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </Card>
+          </ScrollReveal>
+        );
+      })
+    }
+  </ul>
+</Section>
+
+<style>
+  .built-for__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+  }
+
+  .built-for__top-cta {
+    flex-shrink: 0;
+  }
+
+  .built-for__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  .built-for__cell {
+    display: block;
+  }
+
+  :global(.built-for__card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Subtle deprioritization of the paused card, without making it feel broken
+   * or unfinished. The card still has full padding and full content; it just
+   * reads a step quieter than the active card. */
+  :global(.built-for__card--paused) {
+    opacity: 0.92;
+  }
+
+  .built-for__card-header {
+    margin-bottom: var(--space-5);
+  }
+
+  .built-for__status {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border-radius: 999px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .built-for__status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .built-for__status--active {
+    background: var(--color-accent);
+    color: var(--color-bg);
+  }
+  .built-for__status--active .built-for__status-dot {
+    background: var(--color-bg);
+  }
+
+  .built-for__status--paused {
+    background: rgba(138, 155, 176, 0.1);
+    color: var(--color-muted);
+    border: 1px solid var(--color-border);
+  }
+  .built-for__status--paused .built-for__status-dot {
+    background: var(--color-muted);
+  }
+
+  .built-for__card-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-3xl);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-4) 0;
+    color: var(--color-fg);
+  }
+
+  .built-for__card-body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  .built-for__tools {
+    margin-top: var(--space-6);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .built-for__tools-label {
+    display: block;
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-3);
+    font-weight: 500;
+  }
+
+  .built-for__tools-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .built-for__tool {
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    color: var(--color-fg);
+    background: rgba(245, 241, 234, 0.03);
+  }
+
+  @media (max-width: 768px) {
+    .built-for__grid {
+      grid-template-columns: 1fr;
+    }
+    .built-for__top {
+      align-items: flex-start;
+    }
+  }
+</style>

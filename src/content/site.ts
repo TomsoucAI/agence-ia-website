@@ -104,6 +104,19 @@ export const siteContent: SiteContent = {
     // coût moyen d'un workflow manuel par semaine, etc.). Build plan open item
     // for CONTENT_TODO checklist. Do not invent numbers.
     stats: TODO,
+    // Contextual secondary CTA — surfaces the Approach section from Problem.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir notre approche',
+        href: '#approche',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -138,6 +151,19 @@ export const siteContent: SiteContent = {
           'Chaque action sur des données réelles est journalisée. Sans exception.',
       },
     ],
+    // Contextual secondary CTA — surfaces the Framework section from Approach.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir notre framework',
+        href: '#framework',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -151,6 +177,19 @@ export const siteContent: SiteContent = {
     // them. Each verb needs: verb name, short plain-French explanation, concrete
     // example of where it shows up in a real client system. Spec §4.4.
     verbs: TODO,
+    // Contextual secondary CTA — from Framework, the next commercial beat is Services.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir nos services',
+        href: '#services',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -178,6 +217,19 @@ export const siteContent: SiteContent = {
           "Pratiques solo sous contraintes AMF / Sun Life. Comparent le coût d'une réceptionniste à 50 000 $/an à un agent IA 24/7 en mode « draft-and-approve ». Reprise active après le stage d'été 2026.",
       },
     ],
+    // Contextual secondary CTA — from BuiltFor, the next beat is Services.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir nos services',
+        href: '#services',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -285,6 +337,20 @@ export const siteContent: SiteContent = {
       'Voice agents',
       "Automatisation financière à conformité lourde (jusqu'à Q3 2026)",
     ],
+    entryPointLabel: "Point d'entrée",
+    // Contextual secondary CTA — from Services, the next beat is Process.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir le processus',
+        href: '#processus',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -317,6 +383,20 @@ export const siteContent: SiteContent = {
           "On ne vous propose un retainer qu'après 30 jours d'utilisation en production. Si le système ne tient pas la route, on ne facture pas la suite.",
       },
     ],
+    gateLabel: "Après 30 jours d'usage",
+    // Contextual secondary CTA — from Process, the next beat is Outcomes.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir les résultats',
+        href: '#outcomes',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------
@@ -344,6 +424,19 @@ export const siteContent: SiteContent = {
         description: 'Fallback déterministe quand le modèle se trompe.',
       },
     ],
+    // Contextual secondary CTA — Outcomes returns the reader to the audit anchor.
+    ctas: {
+      primary: {
+        label: 'Réserver un audit',
+        href: '#final-cta',
+        variant: 'primary',
+      },
+      secondary: {
+        label: 'Voir nos services',
+        href: '#services',
+        variant: 'secondary',
+      },
+    },
   },
 
   // -------------------------------------------------------------------------

@@ -21,7 +21,7 @@ import StatBlock from '../ui/StatBlock.astro';
 import Marquee from '../islands/Marquee.tsx';
 import ScrollReveal from '../islands/ScrollReveal.tsx';
 
-const { problem, hero } = siteContent;
+const { problem } = siteContent;
 
 const statsResolved = !isTodo(problem.stats);
 const resolvedStats = statsResolved ? problem.stats : null;
@@ -36,9 +36,8 @@ const pendingStatLabels: ReadonlyArray<string> = [
   'À compléter — systèmes cassés sur 12 mois',
 ];
 
-// Contextual secondary CTA for this section — reuse the hero's secondary CTA
-// ("Voir nos services") so the two-CTA pattern is consistent site-wide (spec §5).
-const ctas = hero.ctas;
+// Contextual secondary CTA — surfaces the next narrative beat (Approche).
+const { ctas } = problem;
 ---
 
 <section id="problem" aria-label="Le problème" class="problem">

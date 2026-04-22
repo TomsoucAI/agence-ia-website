@@ -22,12 +22,13 @@ import Card from '../ui/Card.astro';
 import Placeholder from '../ui/Placeholder.astro';
 import ScrollReveal from '../islands/ScrollReveal.tsx';
 
-const { framework, hero } = siteContent;
+const { framework } = siteContent;
 
 const verbsResolved = !isTodo(framework.verbs);
 const resolvedVerbs = verbsResolved ? framework.verbs : null;
 
-const ctas = hero.ctas;
+// Contextual secondary CTA — surfaces the next narrative beat (Services).
+const { ctas } = framework;
 
 // Five pending verb slots shown inside the placeholder. Numbers only —
 // no invented verbs, no invented descriptions. The slot labels are

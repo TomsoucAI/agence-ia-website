@@ -1,10 +1,103 @@
 ---
-// Section: Process (audit-first engagement arc)
-// Spec reference: agence-ia-site-reference.md §4.7
-// Consumes: siteContent.process.steps from src/content/site.ts
-// Three steps; call out the 30-day usage gate before retainer as a trust signal.
+/*
+ * Section: Process (§4.7 — the audit-first engagement arc)
+ *
+ * Three-step timeline: Audit Tier 1 → Implémentation Tier 2 ou 3 → Rétention.
+ * Step 3 carries a visible "Après 30 jours d'usage" gate label — this is the
+ * spec's unique trust signal and must be readable, not buried.
+ *
+ * Custom wrapper (not Section.astro) because the horizontal timeline needs
+ * its own spacing discipline. Timeline primitive handles the >=1024px
+ * horizontal ↔ <1024px vertical layout swap.
+ */
+
+import { siteContent } from '../../content/site';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+import Timeline from '../ui/Timeline.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { process } = siteContent;
+const { ctas, gateLabel, steps } = process;
+
+// Attach the gate label to Step 3 only. Every other step receives no gate.
+// The Timeline primitive renders the gate as a small amber pill above the
+// step title.
+const timelineSteps = steps.map((step) => ({
+  number: step.number,
+  title: step.title,
+  meta: step.meta,
+  body: step.body,
+  gateLabel: step.number === 3 ? gateLabel : undefined,
+}));
 ---
 
-<section id="processus" aria-label="Processus">
-  <!-- TODO(section-process): implement per spec §4.7 -->
+<section id="processus" aria-label="Processus" class="process">
+  <div class="process__inner">
+    <div class="process__top">
+      <SectionHeader
+        eyebrow={process.eyebrow}
+        headline={process.headline}
+        level="h2"
+        scale="section"
+        maxWidth={52}
+        class="process__header"
+      />
+      <div class="process__top-cta">
+        <CtaPair ctas={ctas} />
+      </div>
+    </div>
+
+    <ScrollReveal client:visible className="process__timeline-reveal">
+      <Timeline
+        steps={timelineSteps}
+        ariaLabel="Trois étapes de l'engagement"
+        class="process__timeline"
+      />
+    </ScrollReveal>
+  </div>
 </section>
+
+<style>
+  .process {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .process__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  .process__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-11);
+    flex-wrap: wrap;
+  }
+
+  .process__top-cta {
+    flex-shrink: 0;
+  }
+
+  .process__timeline-reveal {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .process__top {
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .process {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>

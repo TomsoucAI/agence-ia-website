@@ -1,0 +1,239 @@
+---
+/*
+ * Timeline — three-step engagement arc visualization.
+ *
+ * Consumed by the Process section (§4.7). Renders three numbered steps with a
+ * connecting rail. Horizontal layout at ≥1024px (1 → 2 → 3 left to right),
+ * vertical stacked layout below.
+ *
+ * Each step receives:
+ *   - number   : 1 | 2 | 3
+ *   - title    : short step label (e.g. "Audit Tier 1")
+ *   - meta     : duration + price band (e.g. "1 semaine · 500 $ – 1 500 $")
+ *   - body     : 1–2 sentence description
+ *   - gateLabel (optional) : precondition label rendered as a small badge on
+ *                            the step number. Used for Step 3 (30-day gate).
+ *
+ * Content is passed via `steps` prop. Kept slot-free so the component can
+ * enforce the three-step layout (grid-template-columns: repeat(3, 1fr)) at
+ * desktop widths without having to discover slot count at runtime.
+ */
+
+interface TimelineStep {
+  readonly number: 1 | 2 | 3;
+  readonly title: string;
+  readonly meta: string;
+  readonly body: string;
+  readonly gateLabel?: string;
+}
+
+interface Props {
+  readonly steps: ReadonlyArray<TimelineStep>;
+  /** aria-label for the <ol> rail. */
+  readonly ariaLabel?: string;
+  readonly class?: string;
+}
+
+const {
+  steps,
+  ariaLabel = 'Étapes du processus',
+  class: extraClass,
+} = Astro.props;
+---
+
+<ol
+  class:list={['ui-timeline', extraClass]}
+  aria-label={ariaLabel}
+>
+  {
+    steps.map((step, i) => (
+      <li
+        class:list={[
+          'ui-timeline__step',
+          i === steps.length - 1 && 'ui-timeline__step--last',
+        ]}
+      >
+        <div class="ui-timeline__rail" aria-hidden="true">
+          <span class="ui-timeline__node">
+            <span class="ui-timeline__node-number">{step.number}</span>
+          </span>
+          {i < steps.length - 1 && <span class="ui-timeline__line" />}
+        </div>
+
+        <div class="ui-timeline__content">
+          {step.gateLabel && (
+            <span class="ui-timeline__gate">
+              <span class="ui-timeline__gate-dot" aria-hidden="true"></span>
+              {step.gateLabel}
+            </span>
+          )}
+          <h3 class="ui-timeline__title">{step.title}</h3>
+          <p class="ui-timeline__meta">{step.meta}</p>
+          <p class="ui-timeline__body">{step.body}</p>
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .ui-timeline {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-7);
+  }
+
+  .ui-timeline__step {
+    display: grid;
+    grid-template-columns: 3rem 1fr;
+    gap: var(--space-5);
+    align-items: flex-start;
+  }
+
+  /* -------------------------------------------------------------------
+   * Rail — node + connecting line.
+   * On mobile the rail runs vertically under the node; on desktop it
+   * runs horizontally to the right of the node.
+   * ----------------------------------------------------------------- */
+  .ui-timeline__rail {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 3rem;
+  }
+
+  .ui-timeline__node {
+    position: relative;
+    z-index: 1;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    border: 1px solid var(--color-accent);
+    background: var(--color-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .ui-timeline__node-number {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 500;
+    color: var(--color-accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-timeline__line {
+    position: absolute;
+    left: 50%;
+    top: 3rem;
+    bottom: calc(-1 * var(--space-7));
+    width: 1px;
+    background: var(--color-border);
+    transform: translateX(-0.5px);
+  }
+
+  /* -------------------------------------------------------------------
+   * Content
+   * ----------------------------------------------------------------- */
+  .ui-timeline__content {
+    padding-top: var(--space-1);
+  }
+
+  .ui-timeline__gate {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid rgba(200, 134, 58, 0.4);
+    border-radius: 999px;
+    background: rgba(200, 134, 58, 0.06);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin-bottom: var(--space-3);
+    font-weight: 500;
+  }
+  .ui-timeline__gate-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .ui-timeline__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-2) 0;
+    color: var(--color-fg);
+  }
+
+  .ui-timeline__meta {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    margin: 0 0 var(--space-4) 0;
+    font-weight: 500;
+  }
+
+  .ui-timeline__body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  /* -------------------------------------------------------------------
+   * Horizontal layout — ≥1024px
+   * ----------------------------------------------------------------- */
+  @media (min-width: 1024px) {
+    .ui-timeline {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-6);
+      position: relative;
+    }
+
+    .ui-timeline__step {
+      grid-template-columns: 1fr;
+      grid-template-rows: 3rem auto;
+      gap: var(--space-5);
+    }
+
+    .ui-timeline__rail {
+      justify-content: flex-start;
+      min-height: 3rem;
+    }
+
+    .ui-timeline__node {
+      margin-left: 0;
+    }
+
+    .ui-timeline__line {
+      /* Horizontal line runs from the right edge of the current node to the
+       * left edge of the next node. We anchor at the node's right edge
+       * (3rem wide) and extend across the gap to the next column. */
+      top: 1.5rem;
+      bottom: auto;
+      left: 3rem;
+      right: calc(-1 * var(--space-6));
+      width: auto;
+      height: 1px;
+      transform: none;
+    }
+
+    .ui-timeline__content {
+      padding-top: 0;
+    }
+  }
+</style>

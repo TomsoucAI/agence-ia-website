@@ -20,7 +20,7 @@ import CtaPair from '../ui/CtaPair.astro';
 import Card from '../ui/Card.astro';
 import ScrollReveal from '../islands/ScrollReveal.tsx';
 
-const { approach, hero } = siteContent;
+const { approach } = siteContent;
 
 const romanNumerals = ['I', 'II', 'III', 'IV'] as const;
 
@@ -42,7 +42,8 @@ const monogramByKey: Record<PrincipleKey, string> = {
     'M3 18 H21 M7 18 V12 M12 18 V6 M17 18 V9',
 };
 
-const ctas = hero.ctas;
+// Contextual secondary CTA — surfaces the next narrative beat (Framework).
+const { ctas } = approach;
 ---
 
 <section id="approche" aria-label="Notre approche" class="approach">

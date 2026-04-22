@@ -72,6 +72,7 @@ export interface Problem {
   readonly headline: string;
   readonly cards: ReadonlyArray<ProblemCard>;
   readonly stats: Resolvable<ReadonlyArray<Stat>>;
+  readonly ctas: CtaPair;
 }
 
 // ---------------------------------------------------------------------------
@@ -94,6 +95,7 @@ export interface Approach {
   readonly eyebrow: string;
   readonly headline: string;
   readonly principles: ReadonlyArray<Principle>;
+  readonly ctas: CtaPair;
 }
 
 // ---------------------------------------------------------------------------
@@ -110,6 +112,7 @@ export interface Framework {
   readonly eyebrow: string;
   readonly headline: string;
   readonly verbs: Resolvable<ReadonlyArray<Verb>>;
+  readonly ctas: CtaPair;
 }
 
 // ---------------------------------------------------------------------------
@@ -131,6 +134,7 @@ export interface BuiltFor {
   readonly eyebrow: string;
   readonly headline: string;
   readonly segments: ReadonlyArray<Segment>;
+  readonly ctas: CtaPair;
 }
 
 // ---------------------------------------------------------------------------
@@ -165,6 +169,9 @@ export interface Services {
   readonly retainers: ReadonlyArray<Retainer>;
   readonly notSellingTitle: string;
   readonly notSelling: ReadonlyArray<string>;
+  readonly ctas: CtaPair;
+  /** Entry-point badge label shown on Tier 1 (e.g. "Point d'entrée"). */
+  readonly entryPointLabel: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -182,6 +189,9 @@ export interface Process {
   readonly eyebrow: string;
   readonly headline: string;
   readonly steps: ReadonlyArray<Step>;
+  readonly ctas: CtaPair;
+  /** Precondition label shown on Step 3 (e.g. "Après 30 jours d'usage"). */
+  readonly gateLabel: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -197,6 +207,7 @@ export interface Outcomes {
   readonly eyebrow: string;
   readonly headline: string;
   readonly items: ReadonlyArray<Outcome>;
+  readonly ctas: CtaPair;
 }
 
 // ---------------------------------------------------------------------------

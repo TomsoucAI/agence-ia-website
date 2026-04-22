@@ -2,9 +2,10 @@
 /*
  * Homepage — single-page marketing site (spec §1, §3).
  *
- * Phase 3 composition: Hero + Problem + Approach + Framework.
- * The remaining nine sections (BuiltFor, Services, Process, Outcomes,
- * Formation, Team, FAQ, FinalCta, Footer) land in Phases 4 and 5.
+ * Phase 3 + Phase 4 composition: Hero → Problem → Approach → Framework →
+ * BuiltFor → Services → Process → Outcomes.
+ * The remaining five sections (Formation, Team, FAQ, FinalCta, Footer)
+ * land in Phase 5.
  *
  * <title> and <meta description> are in Quebec French, sourced from
  * the content layer where possible and site-level meta otherwise.
@@ -15,6 +16,10 @@ import Hero from '../components/sections/Hero.astro';
 import Problem from '../components/sections/Problem.astro';
 import Approach from '../components/sections/Approach.astro';
 import Framework from '../components/sections/Framework.astro';
+import BuiltFor from '../components/sections/BuiltFor.astro';
+import Services from '../components/sections/Services.astro';
+import Process from '../components/sections/Process.astro';
+import Outcomes from '../components/sections/Outcomes.astro';
 import { siteContent } from '../content/site';
 
 const pageTitle = `${siteContent.meta.brandName} — ${siteContent.hero.eyebrow}`;
@@ -27,5 +32,9 @@ const pageDescription = siteContent.hero.subhead;
     <Problem />
     <Approach />
     <Framework />
+    <BuiltFor />
+    <Services />
+    <Process />
+    <Outcomes />
   </main>
 </BaseLayout>
