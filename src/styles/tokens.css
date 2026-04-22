@@ -28,8 +28,13 @@
   /* ----------------------------------------------------------------------
    * Typography — faces
    * -------------------------------------------------------------------- */
-  --font-display: 'Fraunces', 'Georgia', 'Times New Roman', serif;
-  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Family names match @fontsource-variable packages (self-hosted fonts, see
+   * src/styles/fonts.css). The package publishes 'Fraunces Variable' and
+   * 'Inter Variable'; we keep 'Fraunces' / 'Inter' as fallbacks in case the
+   * package is ever swapped for static @fontsource. Generic system fallbacks
+   * remain the last resort while fonts are loading. */
+  --font-display: 'Fraunces Variable', 'Fraunces', 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   /* Type scale — conservative, restrained, editorial */
   --text-xs: 0.75rem;     /* 12 */

@@ -1,0 +1,34 @@
+/*
+ * Agence IA — self-hosted fonts.
+ *
+ * Loaded once (before tokens.css) so @font-face declarations are registered
+ * before any component style references `var(--font-display)` / `var(--font-body)`.
+ *
+ * Source: @fontsource-variable (npm) — variable-font variants are required
+ * because Fraunces is consumed with `font-variation-settings: 'opsz' 144,
+ * 'SOFT' 30` in several places (StickyNav, SectionHeader, Footer, FinalCta,
+ * AvatarTile, legal pages). Variable also covers all used weights (Fraunces
+ * 400/500, Inter 400/500/600, Inter italic) in a single file per font.
+ *
+ * Package family names are 'Fraunces Variable' and 'Inter Variable'. tokens.css
+ * has been updated to reference those names directly — do NOT change the
+ * family name here without also updating tokens.css.
+ *
+ * Subset behaviour: @fontsource's index.css ships multiple unicode-range
+ * subsets (latin, latin-ext, vietnamese, etc. — and cyrillic/greek for Inter).
+ * Browsers only actually download the woff2 files whose unicode-range matches
+ * rendered text — Quebec French uses latin only (U+0000–00FF covers é è ê à ç
+ * î ô û, plus œ at U+0153 and æ at U+00E6). The other @font-face blocks add a
+ * few KB of parsed CSS text but trigger zero network requests.
+ */
+
+/* Fraunces Variable — normal (100-900 weight range, opsz 9-144, SOFT 0-100) */
+@import "@fontsource-variable/fraunces/index.css";
+
+/* Inter Variable — normal weights (100-900) */
+@import "@fontsource-variable/inter/index.css";
+
+/* Inter Variable — italic (required for .ui-stat__label--pending,
+ * .formation__cta-note, .final-cta__pending-note, .team__bio-pending-copy,
+ * .services__retainers-intro: all Inter-family elements styled italic) */
+@import "@fontsource-variable/inter/wght-italic.css";

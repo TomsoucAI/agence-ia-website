@@ -4,6 +4,10 @@
  * Component-specific styles should not live here; keep this file thin.
  */
 
+/* Self-hosted fonts (Fraunces + Inter). Must be imported before tokens.css
+ * so @font-face declarations are registered before tokens reference the
+ * family names in --font-display / --font-body. */
+@import './fonts.css';
 @import './tokens.css';
 
 @tailwind base;
