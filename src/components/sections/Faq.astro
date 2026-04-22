@@ -1,10 +1,232 @@
 ---
-// Section: FAQ (objection-led)
-// Spec reference: agence-ia-site-reference.md §4.11
-// Consumes: siteContent.faq.questions from src/content/site.ts
-// Every entry preempts a sales objection; uses FaqAccordion island for expand/collapse.
+/*
+ * Section: FAQ (§4.11 — objection-led)
+ *
+ * Implementation: native <details> / <summary> — ZERO JavaScript ships.
+ *
+ * Keyboard-accessible and screen-reader-perfect by default. The default
+ * browser disclosure triangle is hidden via `list-style: none` and
+ * `::-webkit-details-marker`, and replaced with a hand-drawn amber plus/minus
+ * marker that rotates on open.
+ *
+ * Expansion animation: we don't ship CSS-Houdini / `interpolate-size` height
+ * animation to keep the section universally reliable. The answer panel fades
+ * + slides a small lift on open via inner content transform, which is the
+ * editorial, restrained motion signature of Direction A. The <details> block
+ * itself collapses instantly per native behaviour; the inner content transition
+ * is the only animation the viewer reads.
+ *
+ * `name="agence-ia-faq"` on every <details> gives us native single-open
+ * accordion behaviour — opening one closes the others, no JS required.
+ */
+
+import { siteContent } from '../../content/site';
+import SectionHeader from '../ui/SectionHeader.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { faq } = siteContent;
 ---
 
-<section id="faq" aria-label="FAQ">
-  <!-- TODO(section-faq): implement per spec §4.11 -->
+<section id="faq" aria-label="FAQ" class="faq">
+  <div class="faq__inner">
+    <div class="faq__top">
+      <SectionHeader
+        eyebrow={faq.eyebrow}
+        headline={faq.headline}
+        level="h2"
+        scale="section"
+        maxWidth={48}
+        class="faq__header"
+      />
+    </div>
+
+    <ScrollReveal client:visible className="faq__list-reveal">
+      <div class="faq__list" role="list">
+        {
+          faq.questions.map((item) => (
+            <details
+              class="faq__item"
+              name="agence-ia-faq"
+              role="listitem"
+            >
+              <summary class="faq__summary">
+                <span class="faq__question">{item.question}</span>
+                <span class="faq__marker" aria-hidden="true">
+                  <span class="faq__marker-bar faq__marker-bar--h"></span>
+                  <span class="faq__marker-bar faq__marker-bar--v"></span>
+                </span>
+              </summary>
+              <div class="faq__answer">
+                <p class="faq__answer-body">{item.answer}</p>
+              </div>
+            </details>
+          ))
+        }
+      </div>
+    </ScrollReveal>
+  </div>
 </section>
+
+<style>
+  .faq {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .faq__inner {
+    max-width: 56rem;
+    margin: 0 auto;
+  }
+
+  .faq__top {
+    margin-bottom: var(--space-10);
+  }
+
+  .faq__list-reveal {
+    display: block;
+  }
+
+  /* -------------------------------------------------------------------
+   * List — seven <details> stacked with hairline dividers between them.
+   * Top + bottom rules anchor the block so it reads as a unit, not
+   * orphaned stripes.
+   * ----------------------------------------------------------------- */
+  .faq__list {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .faq__item {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  /* Hide the default browser disclosure marker (Chrome/Edge/Safari/Firefox). */
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item summary {
+    list-style: none;
+  }
+
+  /* -------------------------------------------------------------------
+   * Summary — the clickable question row.
+   * Grid so the marker sits at a predictable column regardless of
+   * question length.
+   * ----------------------------------------------------------------- */
+  .faq__summary {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-5);
+    align-items: flex-start;
+    padding: var(--space-5) 0;
+    cursor: pointer;
+    user-select: none;
+    transition: color 180ms ease;
+  }
+  .faq__summary:hover .faq__question {
+    color: var(--color-accent);
+  }
+  .faq__summary:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+
+  .faq__question {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-lg);
+    line-height: 1.35;
+    letter-spacing: -0.005em;
+    color: var(--color-fg);
+    transition: color 180ms ease;
+  }
+
+  /* -------------------------------------------------------------------
+   * Marker — plus that rotates into a minus on open.
+   * Two absolutely-positioned bars; the vertical bar scales to 0 when
+   * [open] so the plus becomes a minus. Subtle, editorial — no spring,
+   * no chevron spin.
+   * ----------------------------------------------------------------- */
+  .faq__marker {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    margin-top: 0.35rem;
+  }
+  .faq__marker-bar {
+    position: absolute;
+    background: var(--color-accent);
+    border-radius: 1px;
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .faq__marker-bar--h {
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1.5px;
+    transform: translateY(-50%);
+  }
+  .faq__marker-bar--v {
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 1.5px;
+    transform: translateX(-50%) scaleY(1);
+    transform-origin: center;
+  }
+  .faq__item[open] .faq__marker-bar--v {
+    transform: translateX(-50%) scaleY(0);
+  }
+
+  /* -------------------------------------------------------------------
+   * Answer — revealed by native <details>. We don't try to animate the
+   * block height; instead, the INNER content transitions opacity + lift
+   * when the details opens. This runs on every open without JS because
+   * the animation is defined on [open] .faq__answer-body.
+   * ----------------------------------------------------------------- */
+  .faq__answer {
+    padding: 0 0 var(--space-6) 0;
+    max-width: 48rem;
+  }
+
+  .faq__answer-body {
+    font-size: var(--text-base);
+    line-height: 1.65;
+    color: var(--color-muted);
+    margin: 0;
+    opacity: 0;
+    transform: translateY(-4px);
+    transition:
+      opacity 260ms ease,
+      transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .faq__item[open] .faq__answer-body {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .faq__marker-bar,
+    .faq__answer-body {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .faq {
+      padding: var(--space-10) var(--space-5);
+    }
+    .faq__question {
+      font-size: var(--text-base);
+    }
+    .faq__summary {
+      padding: var(--space-4) 0;
+      gap: var(--space-4);
+    }
+  }
+</style>

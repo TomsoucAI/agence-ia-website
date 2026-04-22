@@ -1,0 +1,99 @@
+---
+/*
+ * AvatarTile — founder portrait with a monogram fallback.
+ *
+ * Used by Team.astro (§4.10). When a founder has a resolved photoPath,
+ * the tile renders an <img>; otherwise it renders a monogram tile — the
+ * founder's first-name initial in the display typeface over a muted
+ * navy-tinted face with the amber accent.
+ *
+ * The fallback is intentional, not "missing" — it reads as a deliberate
+ * placeholder tile so the section never shows a broken image or a dead
+ * `<img>` src. When photos land in `public/images/team/*`, the `photoPath`
+ * field flips and the <img> branch activates with no refactor.
+ */
+
+interface Props {
+  readonly firstName: string;
+  /** Absolute public path, e.g. `/images/team/tom.avif`. null triggers the monogram fallback. */
+  readonly photoPath: string | null;
+  /** Accessible label for the image / monogram tile. */
+  readonly alt: string;
+  readonly class?: string;
+}
+
+const { firstName, photoPath, alt, class: extraClass } = Astro.props;
+
+// Derive the monogram letter from the first character of firstName.
+// `firstName` is guaranteed present on every founder (non-resolvable).
+const monogram = firstName.charAt(0).toLocaleUpperCase('fr-CA');
+---
+
+<div class:list={['ui-avatar-tile', extraClass]}>
+  {photoPath ? (
+    <img
+      src={photoPath}
+      alt={alt}
+      class="ui-avatar-tile__image"
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <span
+      class="ui-avatar-tile__monogram"
+      role="img"
+      aria-label={alt}
+    >
+      <span class="ui-avatar-tile__letter" aria-hidden="true">{monogram}</span>
+    </span>
+  )}
+</div>
+
+<style>
+  .ui-avatar-tile {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: rgba(245, 241, 234, 0.02);
+    border: 1px solid var(--color-border);
+    font-family: var(--font-body);
+  }
+
+  .ui-avatar-tile__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  /* Monogram fallback — the intentional placeholder tile.
+   * Muted navy face + amber initial in Fraunces, echoing the eyebrow dot. */
+  .ui-avatar-tile__monogram {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background:
+      radial-gradient(
+        120% 120% at 50% 30%,
+        rgba(200, 134, 58, 0.08) 0%,
+        rgba(200, 134, 58, 0.02) 55%,
+        transparent 100%
+      ),
+      rgba(11, 27, 46, 0.6);
+  }
+
+  .ui-avatar-tile__letter {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(3rem, 8vw, 5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--color-accent);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  }
+</style>

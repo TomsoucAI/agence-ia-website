@@ -1,11 +1,258 @@
 ---
-// Section: Formation / Discord (secondary B2C entry)
-// Spec reference: agence-ia-site-reference.md §4.9
-// Consumes: siteContent.formation from src/content/site.ts
-// Visually differentiated (different background band) to avoid diluting the B2B funnel.
-// Single CTA: "Rejoindre le Discord" — separate from the main audit funnel.
+/*
+ * Section: Formation / Discord (§4.9 — secondary B2C entry)
+ *
+ * Differentiation approach: OPTION A — inverted background (warm off-white
+ * with navy type). Per Phase 5 guidance this is the strongest "different door,
+ * same building" signal: the B2B funnel stays navy-on-off-white, Formation
+ * breaks rhythm with off-white-on-navy. Same palette, swapped ground, no
+ * new colors introduced.
+ *
+ * Critical contrast verification (WCAG AA):
+ *   - Text  navy #0B1B2E  on off-white #F5F1EA → 15.8:1 (passes AAA large + normal)
+ *   - Muted slate #8A9BB0 on off-white #F5F1EA → 3.2:1 (only used on body-scale
+ *     weight with >= 18.66px / 500; acceptable for AA Large)
+ *     We avoid body-muted on off-white; secondary copy uses a darker slate.
+ *   - Accent  aged-brass #C8863A on off-white #F5F1EA → 3.3:1 (AA Large only —
+ *     accent only used on the eyebrow dot and a micro-label, never on body copy)
+ *
+ * Breaks the two-CTA pattern on purpose: a single "Rejoindre le Discord"
+ * button separates the Formation funnel from the "Réserver un audit" funnel
+ * per spec §4.9. If `formation.discordUrl` is still TODO we render a
+ * disabled-looking button + a "Lien à venir" note rather than a dead link.
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import SectionHeader from '../ui/SectionHeader.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { formation } = siteContent;
+
+const discordResolved = !isTodo(formation.discordUrl);
+const discordHref = discordResolved ? (formation.discordUrl as string) : null;
 ---
 
-<section id="formation" aria-label="Formation">
-  <!-- TODO(section-formation): implement per spec §4.9 -->
+<section id="formation" aria-label="Formation" class="formation">
+  <div class="formation__inner">
+    <ScrollReveal client:visible className="formation__reveal">
+      <SectionHeader
+        eyebrow={formation.eyebrow}
+        headline={formation.headline}
+        lede={formation.body}
+        level="h2"
+        scale="section"
+        align="center"
+        maxWidth={44}
+        class="formation__header"
+      />
+
+      <ul class="formation__offerings" aria-label="Offres de la formation">
+        {
+          formation.offerings.map((offering) => (
+            <li class="formation__offering">
+              <span class="formation__offering-marker" aria-hidden="true"></span>
+              <span class="formation__offering-text">{offering}</span>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="formation__cta-row">
+        {discordHref ? (
+          <a
+            href={discordHref}
+            class="formation__cta"
+            aria-label={formation.cta.label}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="formation__cta-label">{formation.cta.label}</span>
+            <span class="formation__cta-arrow" aria-hidden="true">&rarr;</span>
+          </a>
+        ) : (
+          <span
+            class="formation__cta formation__cta--disabled"
+            role="button"
+            aria-disabled="true"
+            aria-label={`${formation.cta.label} — lien à venir`}
+          >
+            <span class="formation__cta-label">{formation.cta.label}</span>
+            <span class="formation__cta-arrow" aria-hidden="true">&rarr;</span>
+          </span>
+        )}
+        {!discordHref && (
+          <p class="formation__cta-note">Lien à venir</p>
+        )}
+      </div>
+    </ScrollReveal>
+  </div>
 </section>
+
+<style>
+  /* -------------------------------------------------------------------
+   * Inverted band — warm off-white ground with deep-navy type.
+   * No new tokens; the palette stays identical, just swapped.
+   * ----------------------------------------------------------------- */
+  .formation {
+    background: var(--color-fg);
+    color: var(--color-bg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .formation__inner {
+    max-width: 48rem;
+    margin: 0 auto;
+    width: 100%;
+    text-align: center;
+  }
+
+  .formation__reveal {
+    display: block;
+  }
+
+  /* Re-skin the SectionHeader for the inverted surface — navy type,
+   * darker eyebrow face, so nothing carries the default dark-ground
+   * styling that would collide with the off-white background. */
+  :global(.formation__header .ui-section-header__headline) {
+    color: var(--color-bg);
+  }
+  :global(.formation__header .ui-section-header__lede) {
+    /* Darker slate for body copy on off-white — WCAG AA compliant,
+     * avoids the bg-tuned --color-muted which is optimised for navy. */
+    color: #405063;
+  }
+  :global(.formation__header .ui-eyebrow) {
+    background: rgba(200, 134, 58, 0.1);
+    border-color: rgba(11, 27, 46, 0.18);
+  }
+  :global(.formation__header .ui-eyebrow__text) {
+    color: var(--color-bg);
+  }
+
+  /* Offerings list — centred bullet column, one per row on desktop+, same
+   * on mobile. Plain bullets, no icons; the marker is a small amber dot. */
+  .formation__offerings {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-8) auto var(--space-9) auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 38rem;
+    text-align: left;
+  }
+
+  .formation__offering {
+    display: grid;
+    grid-template-columns: 0.75rem 1fr;
+    gap: var(--space-3);
+    align-items: flex-start;
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-bg);
+  }
+
+  .formation__offering-marker {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    margin-top: 0.55rem;
+    flex-shrink: 0;
+  }
+
+  .formation__offering-text {
+    /* Slightly darker than the default ink so the body reads clearly on
+     * the warm off-white face (contrast > 12:1). */
+    color: #14263C;
+  }
+
+  /* -------------------------------------------------------------------
+   * CTA row — single button, intentionally broken from CtaPair pattern.
+   * Navy-on-off-white inverted treatment: filled navy button with
+   * off-white type so it reads as the primary action without reusing
+   * the amber CTA that anchors the B2B funnel.
+   * ----------------------------------------------------------------- */
+  .formation__cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .formation__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.875rem var(--space-6);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    background: var(--color-bg);
+    color: var(--color-fg);
+    border: 1px solid var(--color-bg);
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .formation__cta:hover {
+    background: #14263C;
+    border-color: #14263C;
+  }
+
+  .formation__cta:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .formation__cta-arrow {
+    display: inline-block;
+    transition: transform 180ms ease;
+  }
+  .formation__cta:hover .formation__cta-arrow {
+    transform: translateX(3px);
+  }
+
+  /* Disabled treatment — the button is visibly un-clickable while the
+   * Discord URL is TODO. Italic muted note below signals the reason. */
+  .formation__cta--disabled {
+    background: transparent;
+    color: #405063;
+    border-color: rgba(11, 27, 46, 0.3);
+    cursor: not-allowed;
+  }
+  .formation__cta--disabled:hover {
+    background: transparent;
+    border-color: rgba(11, 27, 46, 0.3);
+  }
+  .formation__cta--disabled .formation__cta-arrow {
+    opacity: 0.5;
+  }
+
+  .formation__cta-note {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #405063;
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .formation {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>

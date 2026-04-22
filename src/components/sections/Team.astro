@@ -1,10 +1,270 @@
 ---
-// Section: Team (three founders with bios)
-// Spec reference: agence-ia-site-reference.md §4.10
-// Consumes: siteContent.team.founders from src/content/site.ts
-// Tommy and Fabrice last names + bios are TODO — do not invent them.
+/*
+ * Section: Team (§4.10 — three founder cards)
+ *
+ * Three founders: Tom (resolved), Tommy (TODO bio + last name), Fabrice
+ * (TODO bio + last name). All three currently have `photoPath: null`; the
+ * AvatarTile primitive handles the photo-present vs monogram-fallback logic.
+ *
+ * TODO handling:
+ *   - null `photoPath`      → AvatarTile renders a monogram tile (no dead <img>).
+ *   - TODO `lastName`       → card title uses first name only, with a muted
+ *                             "Nom à venir" micro-tag so the absence reads as
+ *                             intentional, not truncated.
+ *   - TODO `bio`            → inline pending treatment (dashed amber rule +
+ *                             italic muted copy). Inline rather than the full
+ *                             Placeholder primitive because bios sit inside
+ *                             the existing card frame and a big placeholder
+ *                             block would break card rhythm.
+ *   - null `linkedinUrl`    → no LinkedIn link rendered (no dead `<a>`).
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import Section from '../ui/Section.astro';
+import SectionHeader from '../ui/SectionHeader.astro';
+import Card from '../ui/Card.astro';
+import AvatarTile from '../ui/AvatarTile.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { team } = siteContent;
 ---
 
-<section id="team" aria-label="Équipe">
-  <!-- TODO(section-team): implement per spec §4.10 -->
-</section>
+<Section id="team" ariaLabel="Équipe" class="team">
+  <div class="team__top">
+    <SectionHeader
+      eyebrow={team.eyebrow}
+      headline={team.headline}
+      level="h2"
+      scale="section"
+      maxWidth={48}
+      class="team__header"
+    />
+  </div>
+
+  <ul class="team__grid" aria-label="Trois fondateurs">
+    {
+      team.founders.map((founder, i) => {
+        const lastNameResolved = !isTodo(founder.lastName);
+        const bioResolved = !isTodo(founder.bio);
+        const fullName = lastNameResolved
+          ? `${founder.firstName} ${founder.lastName as string}`
+          : founder.firstName;
+        const avatarAlt = lastNameResolved
+          ? `Portrait de ${fullName}`
+          : `Monogramme — ${founder.firstName}`;
+        return (
+          <ScrollReveal
+            client:visible
+            as="li"
+            delay={i * 0.08}
+            className="team__cell"
+          >
+            <Card padding="lg" class="team__card">
+              <div class="team__avatar">
+                <AvatarTile
+                  firstName={founder.firstName}
+                  photoPath={founder.photoPath}
+                  alt={avatarAlt}
+                />
+              </div>
+
+              <header class="team__card-header">
+                <h3 class="team__name">{fullName}</h3>
+                {!lastNameResolved && (
+                  <span class="team__name-pending" aria-label="Nom de famille à compléter">
+                    Nom à venir
+                  </span>
+                )}
+                <p class="team__role">{founder.role}</p>
+              </header>
+
+              {bioResolved ? (
+                <p class="team__bio">{founder.bio as string}</p>
+              ) : (
+                <div
+                  class="team__bio-pending"
+                  role="note"
+                  aria-label="Biographie à compléter"
+                >
+                  <span class="team__bio-tag">
+                    <span class="team__bio-tag-dot" aria-hidden="true"></span>
+                    Biographie à venir
+                  </span>
+                  <p class="team__bio-pending-copy">
+                    Le profil de {founder.firstName} sera publié ici sous peu.
+                  </p>
+                </div>
+              )}
+
+              {founder.linkedinUrl && (
+                <a
+                  href={founder.linkedinUrl}
+                  class="team__link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`LinkedIn de ${fullName}`}
+                >
+                  <span>LinkedIn</span>
+                  <span class="team__link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+              )}
+            </Card>
+          </ScrollReveal>
+        );
+      })
+    }
+  </ul>
+</Section>
+
+<style>
+  .team__top {
+    margin-bottom: var(--space-10);
+  }
+
+  .team__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+
+  .team__cell {
+    display: block;
+  }
+
+  :global(.team__card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .team__avatar {
+    margin-bottom: var(--space-5);
+    max-width: 9rem;
+  }
+
+  .team__card-header {
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .team__name {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0;
+    color: var(--color-fg);
+  }
+
+  .team__name-pending {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-2);
+    border: 1px dashed rgba(200, 134, 58, 0.4);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background: rgba(200, 134, 58, 0.05);
+    margin-top: var(--space-2);
+    font-weight: 500;
+  }
+
+  .team__role {
+    font-size: var(--text-sm);
+    letter-spacing: 0.02em;
+    color: var(--color-accent);
+    margin: var(--space-2) 0 0 0;
+    font-weight: 500;
+  }
+
+  .team__bio {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  /* Inline pending bio — dashed amber rule echoing Placeholder.astro but
+   * sized for the card interior. Keeps rhythm with resolved cards. */
+  .team__bio-pending {
+    border: 1px dashed rgba(200, 134, 58, 0.4);
+    border-radius: var(--radius-md);
+    padding: var(--space-4) var(--space-5);
+    background: rgba(200, 134, 58, 0.03);
+  }
+
+  .team__bio-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    font-weight: 500;
+    margin-bottom: var(--space-2);
+  }
+
+  .team__bio-tag-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .team__bio-pending-copy {
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  .team__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-5);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-fg);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: var(--space-1);
+    align-self: flex-start;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+  .team__link:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+  .team__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+  .team__link-arrow {
+    transition: transform 180ms ease;
+  }
+  .team__link:hover .team__link-arrow {
+    transform: translateX(3px);
+  }
+
+  @media (max-width: 1024px) {
+    .team__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .team__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

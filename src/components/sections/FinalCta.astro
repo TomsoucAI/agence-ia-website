@@ -1,10 +1,138 @@
 ---
-// Section: Final CTA
-// Spec reference: agence-ia-site-reference.md §4.12
-// Consumes: siteContent.finalCta from src/content/site.ts
-// Re-anchors on the audit-first model — low risk, concrete deliverable, no obligation.
+/*
+ * Section: Final CTA (§4.12)
+ *
+ * Re-anchors the page on the audit-first model. Single primary CTA —
+ * `siteContent.finalCta.cta` implies only one action, so we use Button
+ * directly instead of CtaPair.
+ *
+ * Booking URL handling:
+ *   - If `meta.bookingUrl` is resolved (typeof string), route the CTA
+ *     there so the button books a real meeting.
+ *   - If still a TODO sentinel, keep the button's content-layer href
+ *     (#final-cta self-anchor) and surface a small italic muted note
+ *     so reviewers understand why the button doesn't leave the page.
+ *
+ * No decorative secondary CTA — spec §4.12 calls for one button only.
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import Eyebrow from '../ui/Eyebrow.astro';
+import Button from '../ui/Button.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { finalCta, meta } = siteContent;
+
+const bookingResolved = !isTodo(meta.bookingUrl);
+const ctaHref = bookingResolved
+  ? (meta.bookingUrl as string)
+  : finalCta.cta.href;
 ---
 
-<section id="final-cta" aria-label="Réserver un audit">
-  <!-- TODO(section-final-cta): implement per spec §4.12 -->
+<section
+  id="final-cta"
+  aria-label="Réserver un audit"
+  class="final-cta"
+>
+  <div class="final-cta__inner">
+    <ScrollReveal client:visible className="final-cta__reveal">
+      <Eyebrow text="Prochaine étape" class="final-cta__eyebrow" />
+      <h2 class="final-cta__headline">{finalCta.headline}</h2>
+      <p class="final-cta__subhead">{finalCta.subhead}</p>
+
+      <div class="final-cta__cta-row">
+        <Button
+          label={finalCta.cta.label}
+          href={ctaHref}
+          variant={finalCta.cta.variant}
+          class="final-cta__button"
+        />
+        {!bookingResolved && (
+          <p class="final-cta__pending-note">
+            Lien de réservation à venir
+          </p>
+        )}
+      </div>
+    </ScrollReveal>
+  </div>
 </section>
+
+<style>
+  .final-cta {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+    /* Faint vertical amber wash so the final CTA reads as the destination
+     * moment in the scroll, without introducing new tokens. */
+    background:
+      radial-gradient(
+        80% 60% at 50% 30%,
+        rgba(200, 134, 58, 0.06) 0%,
+        rgba(200, 134, 58, 0) 70%
+      ),
+      var(--color-bg);
+  }
+
+  .final-cta__inner {
+    max-width: 48rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .final-cta__reveal {
+    display: block;
+  }
+
+  :global(.final-cta__eyebrow) {
+    margin-bottom: var(--space-6);
+  }
+
+  .final-cta__headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(1.875rem, 3.6vw + 0.5rem, var(--text-5xl));
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin: 0 0 var(--space-5) 0;
+    color: var(--color-fg);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  }
+
+  .final-cta__subhead {
+    font-size: var(--text-lg);
+    line-height: 1.55;
+    color: var(--color-muted);
+    margin: 0 auto var(--space-8) auto;
+    max-width: 36rem;
+  }
+
+  .final-cta__cta-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  :global(.final-cta__button) {
+    padding: 1rem var(--space-7);
+    font-size: var(--text-base);
+  }
+
+  .final-cta__pending-note {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    font-style: italic;
+    margin: 0;
+  }
+
+  @media (max-width: 640px) {
+    .final-cta {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>
