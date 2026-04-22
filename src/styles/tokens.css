@@ -1,72 +1,68 @@
 /*
- * Agence IA — design tokens.
+ * Agence IA — design tokens (Direction A · Warm Contrast).
  *
- * This file is the single source of truth for design tokens consumed by
- * Tailwind theme extensions and component styles. Values land here after
- * the design pass. Until then, every custom property is declared empty
- * so the cascade stays predictable.
+ * LOCKED. Do not modify values without approval — this is the single
+ * source of truth for color + typography + spacing across every section.
  *
- * Design pass constraints (from build plan):
- *   - Blue-locked dominant palette: deep navy or sophisticated slate-blue.
- *     NOT bright, cyan, or electric blues.
- *   - No gradients (spec §6).
- *   - Single accent color + restrained palette.
- *   - Typography pair: one display, one body.
+ * Palette: deep navy ground, warm off-white type, muted aged-brass amber accent.
+ * No gradients. Single accent color. Enterprise-serious, editorial.
  *
- * Naming convention: kebab-case, prefixed by category. Do not introduce
- * semantic aliases (e.g. --color-primary) until the palette is chosen —
- * keeping raw tokens + semantic tokens separate prevents drift.
+ * Typography:
+ *   - Display: Fraunces (contemporary serif, full French diacritic support)
+ *   - Body:    Inter    (neutral sans, excellent diacritic rendering)
+ *
+ * Fonts are loaded in src/layouts/BaseLayout.astro.
  */
 
 :root {
-  /* -----------------------------------------------------------------------
-   * Colors — deep navy / slate-blue base + single accent.
-   * To be filled during design pass.
-   * --------------------------------------------------------------------- */
-  --color-bg: ;
-  --color-fg: ;
-  --color-accent: ;
-  --color-muted: ;
+  /* ----------------------------------------------------------------------
+   * Colors
+   * -------------------------------------------------------------------- */
+  --color-bg: #0B1B2E;            /* deep navy — not black, not royal */
+  --color-fg: #F5F1EA;            /* warm off-white (bone/paper) */
+  --color-accent: #C8863A;        /* muted aged-brass amber */
+  --color-accent-soft: #E0B77A;   /* lighter amber for subtle emphasis */
+  --color-muted: #8A9BB0;         /* cool slate, for secondary text */
+  --color-border: #1A2D44;        /* navy shade, 1-step above bg */
 
-  /* -----------------------------------------------------------------------
-   * Typography — one display face, one body face.
-   * To be filled during design pass.
-   * --------------------------------------------------------------------- */
-  --font-display: ;
-  --font-body: ;
+  /* ----------------------------------------------------------------------
+   * Typography — faces
+   * -------------------------------------------------------------------- */
+  --font-display: 'Fraunces', 'Georgia', 'Times New Roman', serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
-  /* Type scale — filled during design pass. */
-  --text-xs: ;
-  --text-sm: ;
-  --text-base: ;
-  --text-lg: ;
-  --text-xl: ;
-  --text-2xl: ;
-  --text-3xl: ;
-  --text-4xl: ;
-  --text-5xl: ;
-  --text-6xl: ;
+  /* Type scale — conservative, restrained, editorial */
+  --text-xs: 0.75rem;     /* 12 */
+  --text-sm: 0.875rem;    /* 14 */
+  --text-base: 1rem;      /* 16 */
+  --text-lg: 1.125rem;    /* 18 */
+  --text-xl: 1.25rem;     /* 20 */
+  --text-2xl: 1.5rem;     /* 24 */
+  --text-3xl: 1.875rem;   /* 30 */
+  --text-4xl: 2.5rem;     /* 40 */
+  --text-5xl: 3.5rem;     /* 56 */
+  --text-6xl: 4.5rem;     /* 72 */
 
-  /* -----------------------------------------------------------------------
-   * Spacing scale — 1 through 12, filled during design pass.
-   * --------------------------------------------------------------------- */
-  --space-1: ;
-  --space-2: ;
-  --space-3: ;
-  --space-4: ;
-  --space-5: ;
-  --space-6: ;
-  --space-7: ;
-  --space-8: ;
-  --space-9: ;
-  --space-10: ;
-  --space-11: ;
-  --space-12: ;
+  /* ----------------------------------------------------------------------
+   * Spacing scale — 4pt base, consistent rhythm
+   * -------------------------------------------------------------------- */
+  --space-1: 0.25rem;   /* 4 */
+  --space-2: 0.5rem;    /* 8 */
+  --space-3: 0.75rem;   /* 12 */
+  --space-4: 1rem;      /* 16 */
+  --space-5: 1.5rem;    /* 24 */
+  --space-6: 2rem;      /* 32 */
+  --space-7: 2.5rem;    /* 40 */
+  --space-8: 3rem;      /* 48 */
+  --space-9: 4rem;      /* 64 */
+  --space-10: 5rem;     /* 80 */
+  --space-11: 6rem;     /* 96 */
+  --space-12: 8rem;     /* 128 */
 
-  /* -----------------------------------------------------------------------
-   * Radii — filled during design pass.
-   * --------------------------------------------------------------------- */
-  --radius-sm: ;
-  --radius-md: ;
-  --radius-lg: ;
+  /* ----------------------------------------------------------------------
+   * Radii — restrained (editorial, not playful)
+   * -------------------------------------------------------------------- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
 }

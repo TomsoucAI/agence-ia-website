@@ -1,0 +1,198 @@
+---
+/*
+ * Hero · Direction B (Cool Monochrome)
+ * Spec: §4.1 Hero
+ * Palette: slate-blue + cool off-white + ice-blue accent
+ * Type: Instrument Serif display + Inter body
+ */
+import { siteContent } from '../../../content/site';
+const { hero } = siteContent;
+---
+
+<section
+  data-direction="b"
+  aria-label="Hero · Direction B"
+  class="dp-hero-b"
+>
+  <div class="dp-hero-b__inner">
+    <div class="dp-hero-b__eyebrow-row">
+      <span class="dp-hero-b__eyebrow-bar" aria-hidden="true"></span>
+      <span class="dp-hero-b__eyebrow">{hero.eyebrow}</span>
+    </div>
+
+    <h1 class="dp-hero-b__headline">{hero.headline}</h1>
+
+    <p class="dp-hero-b__subhead">{hero.subhead}</p>
+
+    <div class="dp-hero-b__ctas">
+      <a href={hero.ctas.primary.href} class="dp-btn-b dp-btn-b--primary">
+        {hero.ctas.primary.label}
+      </a>
+      <a href={hero.ctas.secondary.href} class="dp-btn-b dp-btn-b--secondary">
+        {hero.ctas.secondary.label}
+        <span class="dp-btn-b__arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </div>
+
+    <div class="dp-hero-b__trust-row">
+      <div class="dp-hero-b__trust-item">
+        <span class="dp-hero-b__trust-label">Premier pas</span>
+        <span class="dp-hero-b__trust-value">Audit 500 &ndash; 1 500 $</span>
+      </div>
+      <div class="dp-hero-b__trust-divider" aria-hidden="true"></div>
+      <div class="dp-hero-b__trust-item">
+        <span class="dp-hero-b__trust-label">Durée</span>
+        <span class="dp-hero-b__trust-value">1 semaine</span>
+      </div>
+      <div class="dp-hero-b__trust-divider" aria-hidden="true"></div>
+      <div class="dp-hero-b__trust-item">
+        <span class="dp-hero-b__trust-label">Livraison</span>
+        <span class="dp-hero-b__trust-value">Québec, en français</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .dp-hero-b {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .dp-hero-b__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .dp-hero-b__eyebrow-row {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: var(--space-7);
+  }
+
+  .dp-hero-b__eyebrow-bar {
+    width: 24px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  .dp-hero-b__eyebrow {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .dp-hero-b__headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-style: normal;
+    font-size: clamp(2.25rem, 5.2vw + 0.5rem, var(--text-6xl));
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin: 0 0 var(--space-6) 0;
+    max-width: 58rem;
+    color: var(--color-fg);
+  }
+
+  .dp-hero-b__subhead {
+    font-size: var(--text-xl);
+    line-height: 1.55;
+    color: var(--color-muted);
+    max-width: 42rem;
+    margin: 0 0 var(--space-8) 0;
+    font-weight: 400;
+  }
+
+  .dp-hero-b__ctas {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-10);
+  }
+
+  .dp-btn-b {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.875rem var(--space-5);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: background-color 180ms ease, border-color 180ms ease,
+      color 180ms ease;
+    border: 1px solid transparent;
+  }
+
+  .dp-btn-b--primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+  .dp-btn-b--primary:hover {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-soft);
+  }
+
+  .dp-btn-b--secondary {
+    background: transparent;
+    color: var(--color-fg);
+    border-color: var(--color-border);
+  }
+  .dp-btn-b--secondary:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  .dp-btn-b__arrow {
+    transition: transform 180ms ease;
+  }
+  .dp-btn-b--secondary:hover .dp-btn-b__arrow {
+    transform: translateX(3px);
+  }
+
+  .dp-hero-b__trust-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .dp-hero-b__trust-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .dp-hero-b__trust-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .dp-hero-b__trust-value {
+    font-size: var(--text-sm);
+    color: var(--color-fg);
+    font-weight: 500;
+  }
+
+  .dp-hero-b__trust-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--color-border);
+  }
+</style>

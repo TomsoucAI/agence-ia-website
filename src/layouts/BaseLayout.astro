@@ -1,0 +1,48 @@
+---
+/*
+ * BaseLayout — wraps every production page.
+ *
+ * Responsibilities:
+ *   - Import globals.css (which @imports tokens.css) so design tokens
+ *     cascade to every page that uses this layout
+ *   - Load Fraunces (display) + Inter (body) from Google Fonts
+ *   - Set lang="fr-CA" (site is French-first, Quebec variant)
+ *   - Expose <title> and <meta name="description"> via props
+ *
+ * Pages compose their section components inside the <slot />.
+ * Meta/OG tags and analytics wiring land here in Phase 6.
+ */
+
+import '../styles/globals.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="fr-CA">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,400..700,30;1,9..144,400..700,30&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
