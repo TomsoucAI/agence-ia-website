@@ -1,0 +1,127 @@
+---
+/*
+ * ScrollReveal — Astro-native fade-up-on-enter primitive.
+ *
+ * Replaces the former React/framer-motion island. Emits a plain HTML element
+ * (div / li / article / section) with an opacity-0 + translateY(1rem) initial
+ * state, then adds a "is-revealed" class via IntersectionObserver when the
+ * element enters the viewport. CSS transitions drive the animation so the
+ * per-element stagger comes from transition-delay.
+ *
+ * API preserved so section files only change the import path:
+ *   as        — render tag, default "div"
+ *   delay     — transition-delay in seconds (direct seconds, not index)
+ *   lift      — rem lifted before reveal (default 1)
+ *   duration  — seconds for the fade (default 0.55)
+ *   className — extra class on the wrapper element
+ *
+ * Respects prefers-reduced-motion via the CSS media query below.
+ *
+ * The inline loader script below is hoisted once per page (guarded with a
+ * window-level flag so multiple instances share a single observer).
+ */
+
+export interface Props {
+  as?: 'div' | 'li' | 'article' | 'section';
+  delay?: number;
+  lift?: number;
+  duration?: number;
+  className?: string;
+}
+
+const {
+  as: Tag = 'div',
+  delay = 0,
+  lift = 1,
+  duration = 0.55,
+  className,
+} = Astro.props;
+
+const style = [
+  `--sr-delay:${delay}s`,
+  `--sr-lift:${lift}rem`,
+  `--sr-duration:${duration}s`,
+].join(';');
+
+const classList = ['scroll-reveal', className].filter(Boolean).join(' ');
+---
+
+<Tag class={classList} style={style} data-scroll-reveal>
+  <slot />
+</Tag>
+
+<style is:global>
+  .scroll-reveal {
+    opacity: 0;
+    transform: translateY(var(--sr-lift, 1rem));
+    transition:
+      opacity var(--sr-duration, 0.55s) cubic-bezier(0.22, 1, 0.36, 1)
+        var(--sr-delay, 0s),
+      transform var(--sr-duration, 0.55s) cubic-bezier(0.22, 1, 0.36, 1)
+        var(--sr-delay, 0s);
+    will-change: opacity, transform;
+  }
+
+  .scroll-reveal.is-revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    if (window.__scrollRevealInit) return;
+    window.__scrollRevealInit = true;
+
+    var mql =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+    var reduce = !!(mql && mql.matches);
+
+    function revealAll() {
+      var els = document.querySelectorAll('[data-scroll-reveal]');
+      for (var i = 0; i < els.length; i++) els[i].classList.add('is-revealed');
+    }
+
+    if (reduce || typeof IntersectionObserver === 'undefined') {
+      // No animation path — mark as revealed immediately.
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', revealAll);
+      } else {
+        revealAll();
+      }
+      return;
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i++) {
+          var entry = entries[i];
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-revealed');
+            observer.unobserve(entry.target);
+          }
+        }
+      },
+      { rootMargin: '0px 0px -10% 0px' },
+    );
+
+    function observeAll() {
+      var els = document.querySelectorAll('[data-scroll-reveal]');
+      for (var i = 0; i < els.length; i++) observer.observe(els[i]);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', observeAll);
+    } else {
+      observeAll();
+    }
+  })();
+</script>

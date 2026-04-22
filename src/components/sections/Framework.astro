@@ -20,7 +20,7 @@ import SectionHeader from '../ui/SectionHeader.astro';
 import CtaPair from '../ui/CtaPair.astro';
 import Card from '../ui/Card.astro';
 import Placeholder from '../ui/Placeholder.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { framework } = siteContent;
 
@@ -63,7 +63,6 @@ const pendingVerbSlots: ReadonlyArray<string> = [
         <ol class="framework__grid" aria-label="Cinq verbes du framework">
           {resolvedVerbs.map((v, i) => (
             <ScrollReveal
-              client:visible
               as="li"
               delay={i * 0.07}
               className="framework__cell"

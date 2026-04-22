@@ -20,7 +20,7 @@ import { siteContent } from '../../content/site';
 import { isTodo } from '../../content/types';
 import Eyebrow from '../ui/Eyebrow.astro';
 import Button from '../ui/Button.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { finalCta, meta } = siteContent;
 
@@ -36,7 +36,7 @@ const ctaHref = bookingResolved
   class="final-cta"
 >
   <div class="final-cta__inner">
-    <ScrollReveal client:visible className="final-cta__reveal">
+    <ScrollReveal className="final-cta__reveal">
       <Eyebrow text="Prochaine étape" class="final-cta__eyebrow" />
       <h2 class="final-cta__headline">{finalCta.headline}</h2>
       <p class="final-cta__subhead">{finalCta.subhead}</p>

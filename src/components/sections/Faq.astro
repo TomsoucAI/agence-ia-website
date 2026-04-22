@@ -22,7 +22,7 @@
 
 import { siteContent } from '../../content/site';
 import SectionHeader from '../ui/SectionHeader.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { faq } = siteContent;
 ---
@@ -40,7 +40,7 @@ const { faq } = siteContent;
       />
     </div>
 
-    <ScrollReveal client:visible className="faq__list-reveal">
+    <ScrollReveal className="faq__list-reveal">
       <div class="faq__list" role="list">
         {
           faq.questions.map((item) => (

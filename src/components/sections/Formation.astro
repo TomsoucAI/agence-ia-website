@@ -25,7 +25,7 @@
 import { siteContent } from '../../content/site';
 import { isTodo } from '../../content/types';
 import SectionHeader from '../ui/SectionHeader.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { formation } = siteContent;
 
@@ -35,7 +35,7 @@ const discordHref = discordResolved ? (formation.discordUrl as string) : null;
 
 <section id="formation" aria-label="Formation" class="formation">
   <div class="formation__inner">
-    <ScrollReveal client:visible className="formation__reveal">
+    <ScrollReveal className="formation__reveal">
       <SectionHeader
         eyebrow={formation.eyebrow}
         headline={formation.headline}

@@ -17,7 +17,7 @@ import Section from '../ui/Section.astro';
 import SectionHeader from '../ui/SectionHeader.astro';
 import CtaPair from '../ui/CtaPair.astro';
 import Card from '../ui/Card.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { outcomes } = siteContent;
 const { ctas } = outcomes;
@@ -42,7 +42,6 @@ const { ctas } = outcomes;
     {
       outcomes.items.map((item, i) => (
         <ScrollReveal
-          client:visible
           as="li"
           delay={i * 0.08}
           className="outcomes__cell"

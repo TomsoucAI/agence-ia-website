@@ -15,7 +15,7 @@ import { siteContent } from '../../content/site';
 import SectionHeader from '../ui/SectionHeader.astro';
 import CtaPair from '../ui/CtaPair.astro';
 import Timeline from '../ui/Timeline.astro';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { process } = siteContent;
 const { ctas, gateLabel, steps } = process;
@@ -48,7 +48,7 @@ const timelineSteps = steps.map((step) => ({
       </div>
     </div>
 
-    <ScrollReveal client:visible className="process__timeline-reveal">
+    <ScrollReveal className="process__timeline-reveal">
       <Timeline
         steps={timelineSteps}
         ariaLabel="Trois étapes de l'engagement"

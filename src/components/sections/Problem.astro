@@ -19,7 +19,7 @@ import CtaPair from '../ui/CtaPair.astro';
 import Card from '../ui/Card.astro';
 import StatBlock from '../ui/StatBlock.astro';
 import Marquee from '../islands/Marquee.tsx';
-import ScrollReveal from '../islands/ScrollReveal.tsx';
+import ScrollReveal from '../ui/ScrollReveal.astro';
 
 const { problem } = siteContent;
 
@@ -82,7 +82,6 @@ const { ctas } = problem;
       {
         problem.cards.map((card, i) => (
           <ScrollReveal
-            client:visible
             as="article"
             delay={i * 0.08}
             className="problem__card-reveal"
