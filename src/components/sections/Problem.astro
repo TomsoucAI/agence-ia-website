@@ -1,10 +1,201 @@
 ---
-// Section: Problem (the wedge)
-// Spec reference: agence-ia-site-reference.md §4.2
-// Consumes: siteContent.problem (headline, cards, stats) from src/content/site.ts
-// Stats are TODO until Tom supplies them — do not invent numbers.
+/*
+ * Section: Problem (§4.2 — the wedge)
+ *
+ * Headline + four problem cards + a horizontal stat marquee.
+ *
+ * Stats are a `Resolvable<ReadonlyArray<Stat>>`. When TODO, the marquee
+ * renders clearly-marked placeholder pills (dashed amber border, dash value,
+ * italic label) so the section doesn't look empty and no numbers are invented.
+ *
+ * Marquee is a Framer Motion React island hydrated `client:visible`.
+ * Cards fade up via ScrollReveal, also `client:visible`.
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+import Card from '../ui/Card.astro';
+import StatBlock from '../ui/StatBlock.astro';
+import Marquee from '../islands/Marquee.tsx';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { problem, hero } = siteContent;
+
+const statsResolved = !isTodo(problem.stats);
+const resolvedStats = statsResolved ? problem.stats : null;
+
+// Placeholder labels — visible in the marquee while `problem.stats` is TODO.
+// Intentionally labelled "À compléter" so reviewers read them as pending content,
+// not real stats. No numbers are invented.
+const pendingStatLabels: ReadonlyArray<string> = [
+  'À compléter — PME québécoises sans IA',
+  'À compléter — heures/semaine sur tâches manuelles',
+  'À compléter — pilotes qui ne livrent jamais',
+  'À compléter — systèmes cassés sur 12 mois',
+];
+
+// Contextual secondary CTA for this section — reuse the hero's secondary CTA
+// ("Voir nos services") so the two-CTA pattern is consistent site-wide (spec §5).
+const ctas = hero.ctas;
 ---
 
-<section id="problem" aria-label="Le problème">
-  <!-- TODO(section-problem): implement per spec §4.2 -->
+<section id="problem" aria-label="Le problème" class="problem">
+  <div class="problem__inner">
+    <div class="problem__top">
+      <SectionHeader
+        eyebrow={problem.eyebrow}
+        headline={problem.headline}
+        level="h2"
+        scale="section"
+        maxWidth={48}
+        class="problem__header"
+      />
+      <div class="problem__top-cta">
+        <CtaPair ctas={ctas} />
+      </div>
+    </div>
+
+    <!-- Stat marquee — island, hydrated on visibility. -->
+    <div class="problem__stat-strip">
+      <Marquee
+        client:visible
+        ariaLabel="Défilement de statistiques clés"
+        durationSeconds={45}
+      >
+        {statsResolved && resolvedStats
+          ? resolvedStats.map((stat) => (
+              <StatBlock
+                value={stat.value}
+                label={stat.label}
+                source={stat.source}
+              />
+            ))
+          : pendingStatLabels.map((label) => (
+              <StatBlock value="—" label={label} pending />
+            ))}
+      </Marquee>
+    </div>
+
+    <!-- Problem cards — four cards per §4.2. -->
+    <div class="problem__grid">
+      {
+        problem.cards.map((card, i) => (
+          <ScrollReveal
+            client:visible
+            as="article"
+            delay={i * 0.08}
+            className="problem__card-reveal"
+          >
+            <Card class="problem__card">
+              <div class="problem__card-index">
+                {String(i + 1).padStart(2, '0')}
+              </div>
+              <h3 class="problem__card-title">{card.title}</h3>
+              <p class="problem__card-body">{card.body}</p>
+            </Card>
+          </ScrollReveal>
+        ))
+      }
+    </div>
+  </div>
 </section>
+
+<style>
+  .problem {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .problem__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  .problem__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+  }
+
+  .problem__top-cta {
+    flex-shrink: 0;
+  }
+
+  /* Stat strip — border-to-border amber frame. */
+  .problem__stat-strip {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-5) 0;
+    margin-bottom: var(--space-10);
+    margin-left: calc(-1 * var(--space-6));
+    margin-right: calc(-1 * var(--space-6));
+  }
+
+  /* Cards */
+  .problem__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  .problem__card-reveal {
+    display: block;
+  }
+
+  :global(.problem__card) {
+    height: 100%;
+  }
+
+  .problem__card-index {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    color: var(--color-accent);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-4);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .problem__card-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-3) 0;
+    color: var(--color-fg);
+  }
+
+  .problem__card-body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .problem__grid {
+      grid-template-columns: 1fr;
+    }
+    .problem__top {
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .problem {
+      padding: var(--space-10) var(--space-5);
+    }
+    .problem__stat-strip {
+      margin-left: calc(-1 * var(--space-5));
+      margin-right: calc(-1 * var(--space-5));
+    }
+  }
+</style>

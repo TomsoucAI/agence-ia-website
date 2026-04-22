@@ -1,0 +1,82 @@
+---
+/*
+ * StatBlock — a concrete-number stat pill (value + label, optional source).
+ * Used inside the Problem section's marquee and anywhere a concrete number
+ * anchors a claim. When the value is dashed (placeholder), the pill receives
+ * a dashed amber border so it reads as pending content, not an oversight.
+ */
+
+interface Props {
+  readonly value: string;
+  readonly label: string;
+  readonly source?: string | null;
+  /** Render with dashed border to signal a pending/placeholder value. */
+  readonly pending?: boolean;
+  readonly class?: string;
+}
+
+const {
+  value,
+  label,
+  source = null,
+  pending = false,
+  class: extraClass,
+} = Astro.props;
+---
+
+<div
+  class:list={[
+    'ui-stat',
+    pending && 'ui-stat--pending',
+    extraClass,
+  ]}
+  aria-hidden={pending ? 'true' : undefined}
+>
+  <span class="ui-stat__value">{value}</span>
+  <span class="ui-stat__label">{label}</span>
+  {source && <span class="ui-stat__source">{source}</span>}
+</div>
+
+<style>
+  .ui-stat {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    flex-shrink: 0;
+    padding: var(--space-3) var(--space-5);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(200, 134, 58, 0.04);
+    font-family: var(--font-body);
+  }
+
+  .ui-stat--pending {
+    border: 1px dashed var(--color-accent);
+  }
+
+  .ui-stat__value {
+    font-family: var(--font-display);
+    font-size: var(--text-3xl);
+    font-weight: 500;
+    color: var(--color-accent);
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .ui-stat__label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+  .ui-stat--pending .ui-stat__label {
+    font-style: italic;
+  }
+
+  .ui-stat__source {
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+    opacity: 0.7;
+    margin-left: var(--space-2);
+  }
+</style>

@@ -1,17 +1,31 @@
 ---
+/*
+ * Homepage — single-page marketing site (spec §1, §3).
+ *
+ * Phase 3 composition: Hero + Problem + Approach + Framework.
+ * The remaining nine sections (BuiltFor, Services, Process, Outcomes,
+ * Formation, Team, FAQ, FinalCta, Footer) land in Phases 4 and 5.
+ *
+ * <title> and <meta description> are in Quebec French, sourced from
+ * the content layer where possible and site-level meta otherwise.
+ */
 
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.astro';
+import Problem from '../components/sections/Problem.astro';
+import Approach from '../components/sections/Approach.astro';
+import Framework from '../components/sections/Framework.astro';
+import { siteContent } from '../content/site';
+
+const pageTitle = `${siteContent.meta.brandName} — ${siteContent.hero.eyebrow}`;
+const pageDescription = siteContent.hero.subhead;
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title={pageTitle} description={pageDescription}>
+  <main>
+    <Hero />
+    <Problem />
+    <Approach />
+    <Framework />
+  </main>
+</BaseLayout>

@@ -1,11 +1,136 @@
 ---
-// Section: Hero
-// Spec reference: agence-ia-site-reference.md §4.1
-// Consumes: siteContent.hero from src/content/site.ts
-// Renders the eyebrow, headline, subhead, and the two-CTA pair
-// (primary "Réserver un audit", secondary "Voir nos services").
+/*
+ * Section: Hero (§4.1)
+ *
+ * Claims the site-wide <h1>. Every other section uses <h2> per the
+ * accessibility contract (one h1 per page).
+ *
+ * Content: siteContent.hero — eyebrow, headline, subhead, primary + secondary CTA.
+ *
+ * Trust row below the CTA pair anchors the audit-first positioning per spec
+ * §4.1 (audit price, duration, delivery language) without introducing new
+ * content — every string is derived from siteContent.hero / siteContent.meta.
+ */
+
+import { siteContent } from '../../content/site';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+
+const { hero } = siteContent;
+
+// Trust row — derived, not new content. Values match the spec §4.1 positioning:
+// audit-first, local to Québec, in French.
+const trustItems: ReadonlyArray<{ label: string; value: string }> = [
+  { label: 'Premier pas', value: 'Audit 500 – 1 500 $' },
+  { label: 'Durée', value: '1 semaine' },
+  { label: 'Livraison', value: 'Québec, en français' },
+];
 ---
 
-<section id="hero" aria-label="Hero">
-  <!-- TODO(section-hero): implement per spec §4.1 -->
+<section id="hero" aria-label="Hero" class="hero">
+  <div class="hero__inner">
+    <SectionHeader
+      eyebrow={hero.eyebrow}
+      headline={hero.headline}
+      lede={hero.subhead}
+      level="h1"
+      scale="display"
+      maxWidth={56}
+      class="hero__header"
+    />
+
+    <div class="hero__ctas">
+      <CtaPair ctas={hero.ctas} />
+    </div>
+
+    <div class="hero__trust-row" role="list" aria-label="Points de confiance">
+      {
+        trustItems.map((item, i) => (
+          <>
+            <div class="hero__trust-item" role="listitem">
+              <span class="hero__trust-label">{item.label}</span>
+              <span class="hero__trust-value">{item.value}</span>
+            </div>
+            {i < trustItems.length - 1 && (
+              <div class="hero__trust-divider" aria-hidden="true"></div>
+            )}
+          </>
+        ))
+      }
+    </div>
+  </div>
 </section>
+
+<style>
+  .hero {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .hero__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .hero__header {
+    margin-bottom: var(--space-8);
+  }
+
+  .hero__ctas {
+    margin-bottom: var(--space-10);
+  }
+
+  .hero__trust-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .hero__trust-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .hero__trust-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .hero__trust-value {
+    font-size: var(--text-sm);
+    color: var(--color-fg);
+    font-weight: 500;
+  }
+
+  .hero__trust-divider {
+    width: 1px;
+    height: 28px;
+    background: var(--color-border);
+  }
+
+  @media (max-width: 640px) {
+    .hero {
+      padding: var(--space-10) var(--space-5);
+      min-height: 70vh;
+    }
+    .hero__trust-divider {
+      display: none;
+    }
+    .hero__trust-row {
+      gap: var(--space-4);
+    }
+  }
+</style>

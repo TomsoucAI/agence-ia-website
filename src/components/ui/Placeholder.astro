@@ -1,0 +1,124 @@
+---
+/*
+ * Placeholder — a visually-intentional block shown when a content field
+ * still holds a TODO sentinel (see src/content/types.ts::isTodo).
+ *
+ * Goals per spec:
+ *   - NOT broken-looking, NOT empty, NOT inventing content.
+ *   - Reads as a deliberate "content pending" frame, not a bug.
+ *   - Visually coherent with the rest of the site (tokens-only styling).
+ *
+ * Use via default slot for optional body copy, or pass `title` + `body`
+ * as props for the common case.
+ */
+
+interface Props {
+  readonly title: string;
+  readonly body?: string;
+  /** Small label shown above the title — defaults to a French "content pending" tag. */
+  readonly tag?: string;
+  readonly class?: string;
+}
+
+const {
+  title,
+  body,
+  tag = 'Contenu à compléter',
+  class: extraClass,
+} = Astro.props;
+---
+
+<div
+  class:list={['ui-placeholder', extraClass]}
+  role="note"
+  aria-label="Contenu propriétaire à compléter"
+>
+  <div class="ui-placeholder__grid" aria-hidden="true"></div>
+
+  <div class="ui-placeholder__body">
+    <span class="ui-placeholder__tag">
+      <span class="ui-placeholder__tag-dot" aria-hidden="true"></span>
+      {tag}
+    </span>
+    <h3 class="ui-placeholder__title">{title}</h3>
+    {body && <p class="ui-placeholder__copy">{body}</p>}
+    <slot />
+  </div>
+</div>
+
+<style>
+  .ui-placeholder {
+    position: relative;
+    border: 1px dashed var(--color-accent);
+    border-radius: var(--radius-md);
+    padding: var(--space-8) var(--space-6);
+    background:
+      linear-gradient(
+        180deg,
+        rgba(200, 134, 58, 0.03) 0%,
+        rgba(200, 134, 58, 0.01) 100%
+      );
+    overflow: hidden;
+    font-family: var(--font-body);
+  }
+
+  /* Subtle diagonal grid for the placeholder face — tokens-only, amber-tinted. */
+  .ui-placeholder__grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        rgba(200, 134, 58, 0.06) 0 1px,
+        transparent 1px 14px
+      );
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  .ui-placeholder__body {
+    position: relative;
+    max-width: 44rem;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ui-placeholder__tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-1) var(--space-3);
+    border: 1px solid rgba(200, 134, 58, 0.35);
+    border-radius: 999px;
+    font-size: var(--text-xs);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    background: rgba(200, 134, 58, 0.06);
+    margin-bottom: var(--space-5);
+  }
+  .ui-placeholder__tag-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+  }
+
+  .ui-placeholder__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-2xl);
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-3) 0;
+    color: var(--color-fg);
+  }
+
+  .ui-placeholder__copy {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+</style>

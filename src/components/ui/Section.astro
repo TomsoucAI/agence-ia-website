@@ -1,0 +1,75 @@
+---
+/*
+ * Section — the production-section wrapper.
+ *
+ * Centralises vertical rhythm, max-width, padding, optional section border,
+ * and anchor id + aria-label. Lets every section focus on its own content.
+ *
+ * Spacing, background, and border match the HeroA / ProblemA reference so
+ * sections stack edge-to-edge without double borders or rhythm breaks.
+ */
+
+interface Props {
+  readonly id: string;
+  readonly ariaLabel: string;
+  /** Tag override. Every section is <section> by default. */
+  readonly as?: 'section' | 'aside';
+  /** Hide the 1px bottom border (last production section). */
+  readonly borderBottom?: boolean;
+  /** Max width of the inner container in rem. Defaults to 72. */
+  readonly maxWidth?: number;
+  readonly class?: string;
+}
+
+const {
+  id,
+  ariaLabel,
+  as = 'section',
+  borderBottom = true,
+  maxWidth = 72,
+  class: extraClass,
+} = Astro.props;
+
+const Tag = as;
+const styleVar = `--ui-section-max: ${maxWidth}rem;`;
+---
+
+<Tag
+  id={id}
+  aria-label={ariaLabel}
+  class:list={[
+    'ui-section',
+    !borderBottom && 'ui-section--no-border',
+    extraClass,
+  ]}
+  style={styleVar}
+>
+  <div class="ui-section__inner">
+    <slot />
+  </div>
+</Tag>
+
+<style>
+  .ui-section {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+  .ui-section--no-border {
+    border-bottom: none;
+  }
+
+  .ui-section__inner {
+    max-width: var(--ui-section-max, 72rem);
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    .ui-section {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>

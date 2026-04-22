@@ -22,6 +22,7 @@ Rule: do not invent content. If it isn't in the spec, it stays as a `TODO` senti
 - [ ] **Problem section stat blocks** — `siteContent.problem.stats`
   - Spec: §4.2 "Use stat blocks and possibly a horizontal scroll/marquee with concrete numbers (% of Quebec SMBs not using AI, average cost of a manual workflow per week, etc.) — fill in once Tom validates the data points"
   - Spec §8: "Stat numbers in the Problem section (4.2) need to be sourced or replaced with anecdote-based framing"
+  - **Placeholder UI implemented** (Phase 3): the Problem marquee renders four dashed-amber "À compléter — …" pills via `Marquee.tsx`. When `problem.stats` resolves to a `Stat[]`, real values render automatically with no refactor. Still pending: the actual stat values.
 
 ## §4.4 Framework — the five verbs
 
@@ -29,6 +30,7 @@ Rule: do not invent content. If it isn't in the spec, it stays as a `TODO` senti
   - Spec: §4.4 "Verbs to be supplied by Tom before build"
   - Each verb needs: verb name, short plain-French explanation, concrete example of where it shows up in a real client system
   - Spec §8: "The five verbs in section 4.4 need to be supplied"
+  - **Placeholder UI implemented** (Phase 3): the Framework section renders a visually-intentional `Placeholder` frame with five numbered slots ("Verbe 1" … "Verbe 5") and the tag "Cinq verbes — contenu propriétaire à compléter". The resolved-state five-card layout is already wired; supplying `framework.verbs` in `site.ts` flips the render with no refactor. Still pending: the verbs themselves.
 
 ## §4.9 Formation — Discord
 

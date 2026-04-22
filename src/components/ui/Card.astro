@@ -1,0 +1,80 @@
+---
+/*
+ * Card — the production card primitive for principle/problem/audience/outcome
+ * card rows. Matches the ProblemA reference: hairline border on deep navy,
+ * subtle amber-tinted hover, tabular index row optional.
+ *
+ * This primitive is intentionally minimal. Cards compose their own content
+ * (index, title, body, icon) in the `default` slot; the Card only provides
+ * the border, padding, hover treatment, and optional article semantics.
+ */
+
+interface Props {
+  /** Use an <article> by default; caller can downgrade to <div> if needed. */
+  readonly as?: 'article' | 'div';
+  /** Render the amber-tinted hover treatment. Defaults to true. */
+  readonly interactive?: boolean;
+  /** Padding scale. Defaults to `md`. */
+  readonly padding?: 'sm' | 'md' | 'lg';
+  /** Tint the card face with a faint amber wash (used for emphasis cards). */
+  readonly accent?: boolean;
+  readonly class?: string;
+}
+
+const {
+  as = 'article',
+  interactive = true,
+  padding = 'md',
+  accent = false,
+  class: extraClass,
+} = Astro.props;
+
+const Tag = as;
+---
+
+<Tag
+  class:list={[
+    'ui-card',
+    `ui-card--pad-${padding}`,
+    interactive && 'ui-card--interactive',
+    accent && 'ui-card--accent',
+    extraClass,
+  ]}
+>
+  <slot />
+</Tag>
+
+<style>
+  .ui-card {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(245, 241, 234, 0.02);
+    transition:
+      border-color 180ms ease,
+      background-color 180ms ease,
+      transform 220ms ease;
+    position: relative;
+    color: var(--color-fg);
+    font-family: var(--font-body);
+  }
+
+  .ui-card--pad-sm {
+    padding: var(--space-5);
+  }
+  .ui-card--pad-md {
+    padding: var(--space-6);
+  }
+  .ui-card--pad-lg {
+    padding: var(--space-7);
+  }
+
+  .ui-card--interactive:hover {
+    border-color: var(--color-accent);
+    background: rgba(200, 134, 58, 0.04);
+  }
+
+  .ui-card--accent {
+    background: rgba(200, 134, 58, 0.05);
+    border-color: rgba(200, 134, 58, 0.35);
+  }
+</style>

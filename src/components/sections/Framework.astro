@@ -1,10 +1,251 @@
 ---
-// Section: Framework (the five-verb orchestrator)
-// Spec reference: agence-ia-site-reference.md §4.4
-// Consumes: siteContent.framework.verbs from src/content/site.ts
-// The five verbs are TODO until Tom supplies them — do not invent them.
+/*
+ * Section: Framework (§4.4 — the five-verb orchestrator)
+ *
+ * The five verbs are proprietary content that Tom will supply. Until then,
+ * render a visually-intentional TODO placeholder per the spec:
+ *
+ *   - NOT broken-looking, NOT empty, NOT inventing verbs
+ *   - Clearly marked as content propriétaire à compléter
+ *   - Visually intentional (five numbered slots, one per verb)
+ *
+ * When Tom resolves `siteContent.framework.verbs`, this section will render
+ * the real five-verb layout without further refactor — the guarded branch
+ * already exists below.
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+import Card from '../ui/Card.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { framework, hero } = siteContent;
+
+const verbsResolved = !isTodo(framework.verbs);
+const resolvedVerbs = verbsResolved ? framework.verbs : null;
+
+const ctas = hero.ctas;
+
+// Five pending verb slots shown inside the placeholder. Numbers only —
+// no invented verbs, no invented descriptions. The slot labels are
+// French placeholder copy that makes clear the content is pending.
+const pendingVerbSlots: ReadonlyArray<string> = [
+  'Verbe 1',
+  'Verbe 2',
+  'Verbe 3',
+  'Verbe 4',
+  'Verbe 5',
+];
 ---
 
-<section id="framework" aria-label="Framework">
-  <!-- TODO(section-framework): implement per spec §4.4 -->
+<section id="framework" aria-label="Framework" class="framework">
+  <div class="framework__inner">
+    <div class="framework__top">
+      <SectionHeader
+        eyebrow={framework.eyebrow}
+        headline={framework.headline}
+        level="h2"
+        scale="section"
+        maxWidth={56}
+        class="framework__header"
+      />
+      <div class="framework__top-cta">
+        <CtaPair ctas={ctas} />
+      </div>
+    </div>
+
+    {
+      verbsResolved && resolvedVerbs ? (
+        <ol class="framework__grid" aria-label="Cinq verbes du framework">
+          {resolvedVerbs.map((v, i) => (
+            <ScrollReveal
+              client:visible
+              as="li"
+              delay={i * 0.07}
+              className="framework__cell"
+            >
+              <Card padding="lg" class="framework__card">
+                <span class="framework__index" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 class="framework__verb">{v.verb}</h3>
+                <p class="framework__description">{v.description}</p>
+                <div class="framework__example">
+                  <span class="framework__example-label">Exemple</span>
+                  <p class="framework__example-body">{v.example}</p>
+                </div>
+              </Card>
+            </ScrollReveal>
+          ))}
+        </ol>
+      ) : (
+        <Placeholder
+          tag="Framework · contenu propriétaire"
+          title="Cinq verbes — contenu propriétaire à compléter"
+          body="Les cinq verbes qui orchestrent nos systèmes IA seront publiés ici. Chacun viendra accompagné d’une définition en français clair et d’un exemple concret tiré d’un déploiement client."
+        >
+          <ol class="framework__slots" aria-label="Cinq emplacements en attente">
+            {pendingVerbSlots.map((label, i) => (
+              <li class="framework__slot" aria-hidden="true">
+                <span class="framework__slot-index">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <span class="framework__slot-label">{label}</span>
+              </li>
+            ))}
+          </ol>
+        </Placeholder>
+      )
+    }
+  </div>
 </section>
+
+<style>
+  .framework {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .framework__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  .framework__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+  }
+
+  /* Resolved state (future) — five cards, horizontal flow diagram. */
+  .framework__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-4);
+  }
+  .framework__cell {
+    display: block;
+  }
+  :global(.framework__card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .framework__index {
+    font-family: var(--font-display);
+    font-size: var(--text-sm);
+    color: var(--color-accent);
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-4);
+    font-variant-numeric: tabular-nums;
+  }
+  .framework__verb {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-3) 0;
+    color: var(--color-fg);
+  }
+  .framework__description {
+    font-size: var(--text-sm);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0 0 var(--space-5) 0;
+  }
+  .framework__example {
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-border);
+    margin-top: auto;
+  }
+  .framework__example-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+    display: block;
+    margin-bottom: var(--space-2);
+  }
+  .framework__example-body {
+    font-size: var(--text-sm);
+    line-height: 1.55;
+    color: var(--color-fg);
+    margin: 0;
+  }
+
+  /* Placeholder state — five numbered slot tiles inside the Placeholder frame. */
+  .framework__slots {
+    list-style: none;
+    padding: 0;
+    margin: var(--space-8) 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: var(--space-3);
+  }
+  .framework__slot {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-5) var(--space-4);
+    border: 1px dashed rgba(200, 134, 58, 0.5);
+    border-radius: var(--radius-md);
+    background: rgba(11, 27, 46, 0.5);
+    text-align: center;
+  }
+  .framework__slot-index {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    color: var(--color-accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .framework__slot-label {
+    font-size: var(--text-xs);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 1024px) {
+    .framework__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .framework__slots {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+  @media (max-width: 768px) {
+    .framework__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .framework__slots {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .framework__top {
+      align-items: flex-start;
+    }
+  }
+  @media (max-width: 640px) {
+    .framework {
+      padding: var(--space-10) var(--space-5);
+    }
+    .framework__grid {
+      grid-template-columns: 1fr;
+    }
+    .framework__slots {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

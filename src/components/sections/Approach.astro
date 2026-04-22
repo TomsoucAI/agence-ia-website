@@ -1,10 +1,202 @@
 ---
-// Section: Approach (the four non-negotiables — the moat)
-// Spec reference: agence-ia-site-reference.md §4.3
-// Consumes: siteContent.approach.principles from src/content/site.ts
-// Four principle cards: permission-aware, locally hostable, resilient, observable.
+/*
+ * Section: Approach (§4.3 — the four non-negotiables)
+ *
+ * The most important section on the site (spec §4.3). Four principle cards,
+ * each a substantive promise, not a feature checkbox.
+ *
+ * Design decision: typographic-first treatment per the spec's guidance
+ * ("If in doubt, lean typographic (number + title + body) rather than iconic").
+ * Each card pairs a large aged-brass roman numeral (I / II / III / IV) with
+ * a slim inline SVG monogram rendered from the principle's key — no clichéd
+ * AI / lock / cloud icons. The number + key dominate; the icon is secondary
+ * signal, not decoration.
+ */
+
+import { siteContent } from '../../content/site';
+import type { PrincipleKey } from '../../content/types';
+import SectionHeader from '../ui/SectionHeader.astro';
+import CtaPair from '../ui/CtaPair.astro';
+import Card from '../ui/Card.astro';
+import ScrollReveal from '../islands/ScrollReveal.tsx';
+
+const { approach, hero } = siteContent;
+
+const romanNumerals = ['I', 'II', 'III', 'IV'] as const;
+
+// Mapping principle → monogram. Strictly non-clichéd (no lock, no cloud,
+// no brain, no robot). Each glyph is a minimal abstract mark that echoes
+// the principle meaning without stooping to AI-icon vocabulary.
+const monogramByKey: Record<PrincipleKey, string> = {
+  // Permission-aware — a gate/threshold mark (vertical bar + horizontal hinge).
+  'permission-aware':
+    'M4 4 L4 20 M4 12 L14 12 M18 4 L18 20',
+  // Locally hostable — a concentric square (on-prem containment).
+  'locally-hostable':
+    'M3 3 H21 V21 H3 Z M8 8 H16 V16 H8 Z',
+  // Resilient without LLMs — a forked arrow (primary + fallback).
+  'resilient-without-llms':
+    'M4 12 H20 M16 7 L20 12 L16 17 M14 4 H20 V10 M14 20 H20 V14',
+  // Observable — a thin horizontal axis with a single marker (log line).
+  'observable':
+    'M3 18 H21 M7 18 V12 M12 18 V6 M17 18 V9',
+};
+
+const ctas = hero.ctas;
 ---
 
-<section id="approche" aria-label="Notre approche">
-  <!-- TODO(section-approach): implement per spec §4.3 -->
+<section id="approche" aria-label="Notre approche" class="approach">
+  <div class="approach__inner">
+    <div class="approach__top">
+      <SectionHeader
+        eyebrow={approach.eyebrow}
+        headline={approach.headline}
+        level="h2"
+        scale="section"
+        maxWidth={48}
+        class="approach__header"
+      />
+      <div class="approach__top-cta">
+        <CtaPair ctas={ctas} />
+      </div>
+    </div>
+
+    <ol class="approach__grid" aria-label="Quatre principes non négociables">
+      {
+        approach.principles.map((principle, i) => (
+          <ScrollReveal
+            client:visible
+            as="li"
+            delay={i * 0.08}
+            className="approach__cell"
+          >
+            <Card padding="lg" class="approach__card">
+              <header class="approach__card-header">
+                <span class="approach__numeral" aria-hidden="true">
+                  {romanNumerals[i] ?? String(i + 1)}
+                </span>
+                <svg
+                  class="approach__glyph"
+                  viewBox="0 0 24 24"
+                  width="28"
+                  height="28"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.25"
+                  stroke-linecap="square"
+                  stroke-linejoin="miter"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d={monogramByKey[principle.key]} />
+                </svg>
+              </header>
+              <h3 class="approach__card-title">{principle.title}</h3>
+              <p class="approach__card-body">{principle.body}</p>
+            </Card>
+          </ScrollReveal>
+        ))
+      }
+    </ol>
+  </div>
 </section>
+
+<style>
+  .approach {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .approach__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+  }
+
+  .approach__top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: var(--space-8);
+    margin-bottom: var(--space-10);
+    flex-wrap: wrap;
+  }
+
+  .approach__grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+
+  .approach__cell {
+    display: block;
+  }
+
+  :global(.approach__card) {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .approach__card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-6);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .approach__numeral {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-4xl);
+    line-height: 1;
+    color: var(--color-accent);
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .approach__glyph {
+    color: var(--color-accent);
+    opacity: 0.85;
+    flex-shrink: 0;
+  }
+
+  .approach__card-title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    margin: 0 0 var(--space-3) 0;
+    color: var(--color-fg);
+  }
+
+  .approach__card-body {
+    font-size: var(--text-base);
+    line-height: 1.6;
+    color: var(--color-muted);
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .approach__grid {
+      grid-template-columns: 1fr;
+    }
+    .approach__top {
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .approach {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>

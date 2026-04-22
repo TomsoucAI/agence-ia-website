@@ -1,0 +1,52 @@
+---
+/*
+ * CtaPair — the two-CTA pattern repeated near the top of each major section
+ * per spec §5: primary ("Réserver un audit") + secondary contextual CTA.
+ *
+ * Consumes a typed `CtaPair` object from the content layer. The primary CTA
+ * is always amber; the secondary is always the hairline-bordered variant.
+ */
+
+import type { CtaPair } from '../../content/types';
+import Button from './Button.astro';
+
+interface Props {
+  readonly ctas: CtaPair;
+  /** Alignment when wrapped. Defaults to `start`. */
+  readonly align?: 'start' | 'center';
+  readonly class?: string;
+}
+
+const { ctas, align = 'start', class: extraClass } = Astro.props;
+---
+
+<div
+  class:list={["ui-cta-pair", `ui-cta-pair--${align}`, extraClass]}
+  role="group"
+  aria-label="Actions principales"
+>
+  <Button
+    label={ctas.primary.label}
+    href={ctas.primary.href}
+    variant={ctas.primary.variant}
+  />
+  <Button
+    label={ctas.secondary.label}
+    href={ctas.secondary.href}
+    variant={ctas.secondary.variant}
+  />
+</div>
+
+<style>
+  .ui-cta-pair {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+  }
+  .ui-cta-pair--start {
+    justify-content: flex-start;
+  }
+  .ui-cta-pair--center {
+    justify-content: center;
+  }
+</style>

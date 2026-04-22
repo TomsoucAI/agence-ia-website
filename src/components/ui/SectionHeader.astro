@@ -1,0 +1,105 @@
+---
+/*
+ * SectionHeader — eyebrow + headline + optional lede paragraph.
+ * The canonical top-of-section block, matching the HeroA / ProblemA reference
+ * treatment (pill eyebrow, Fraunces display headline, muted lede).
+ *
+ * Headline level is configurable so only the Hero claims the site-wide <h1>
+ * (accessibility: single h1 per page).
+ */
+
+import Eyebrow from './Eyebrow.astro';
+
+interface Props {
+  readonly eyebrow: string;
+  readonly headline: string;
+  readonly lede?: string;
+  /** Heading level. Hero uses `h1`, every section below uses `h2`. */
+  readonly level?: 'h1' | 'h2';
+  /** Max width of the header block (in rem). Defaults to 48. */
+  readonly maxWidth?: number;
+  /** Visual scale of the headline. Hero uses `display`, sections use `section`. */
+  readonly scale?: 'display' | 'section';
+  readonly align?: 'start' | 'center';
+  readonly class?: string;
+}
+
+const {
+  eyebrow,
+  headline,
+  lede,
+  level = 'h2',
+  maxWidth = 48,
+  scale = 'section',
+  align = 'start',
+  class: extraClass,
+} = Astro.props;
+
+const Heading = level;
+const styleVar = `--ui-section-header-max: ${maxWidth}rem;`;
+---
+
+<div
+  class:list={[
+    'ui-section-header',
+    `ui-section-header--${align}`,
+    `ui-section-header--${scale}`,
+    extraClass,
+  ]}
+  style={styleVar}
+>
+  <Eyebrow text={eyebrow} class="ui-section-header__eyebrow" />
+  <Heading class="ui-section-header__headline">{headline}</Heading>
+  {lede && <p class="ui-section-header__lede">{lede}</p>}
+</div>
+
+<style>
+  .ui-section-header {
+    max-width: var(--ui-section-header-max, 48rem);
+    font-family: var(--font-body);
+  }
+  .ui-section-header--center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .ui-section-header__eyebrow {
+    margin-bottom: var(--space-5);
+  }
+
+  .ui-section-header__headline {
+    font-family: var(--font-display);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin: 0;
+    color: var(--color-fg);
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  }
+
+  /* Hero-scale display headline (§4.1) — tracks HeroA. */
+  .ui-section-header--display .ui-section-header__headline {
+    font-size: clamp(2.25rem, 5vw + 0.5rem, var(--text-6xl));
+    line-height: 1.08;
+  }
+
+  /* Section-scale headline (§4.2 onward) — tracks ProblemA. */
+  .ui-section-header--section .ui-section-header__headline {
+    font-size: clamp(1.875rem, 3.6vw + 0.5rem, var(--text-5xl));
+  }
+
+  .ui-section-header__lede {
+    font-family: var(--font-body);
+    font-size: var(--text-xl);
+    line-height: 1.55;
+    color: var(--color-muted);
+    margin: var(--space-6) 0 0 0;
+    font-weight: 400;
+    max-width: 42rem;
+  }
+  .ui-section-header--center .ui-section-header__lede {
+    margin-left: auto;
+    margin-right: auto;
+  }
+</style>

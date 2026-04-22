@@ -1,0 +1,96 @@
+---
+/*
+ * Button — the single button primitive. Never style buttons inline.
+ * Renders as an <a> so it can be used both for anchor jumps (#services)
+ * and external URLs (booking link).
+ *
+ * Variants:
+ *   - primary   : solid aged-brass amber, dark-navy text. Primary CTA.
+ *   - secondary : transparent + hairline border. Contextual CTA.
+ *
+ * Secondary variant shows a small arrow glyph that animates on hover,
+ * matching the HeroA Direction A reference.
+ */
+
+interface Props {
+  readonly label: string;
+  readonly href: string;
+  readonly variant: 'primary' | 'secondary';
+  readonly ariaLabel?: string;
+  readonly class?: string;
+}
+
+const {
+  label,
+  href,
+  variant,
+  ariaLabel,
+  class: extraClass,
+} = Astro.props;
+---
+
+<a
+  href={href}
+  aria-label={ariaLabel ?? label}
+  class:list={["ui-btn", `ui-btn--${variant}`, extraClass]}
+>
+  <span class="ui-btn__label">{label}</span>
+  {variant === 'secondary' && (
+    <span class="ui-btn__arrow" aria-hidden="true">&rarr;</span>
+  )}
+</a>
+
+<style>
+  .ui-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0.875rem var(--space-5);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease,
+      color 180ms ease,
+      transform 180ms ease;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .ui-btn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  .ui-btn--primary {
+    background: var(--color-accent);
+    color: var(--color-bg);
+    border-color: var(--color-accent);
+  }
+  .ui-btn--primary:hover {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-soft);
+  }
+
+  .ui-btn--secondary {
+    background: transparent;
+    color: var(--color-fg);
+    border-color: var(--color-border);
+  }
+  .ui-btn--secondary:hover {
+    border-color: var(--color-muted);
+  }
+
+  .ui-btn__arrow {
+    display: inline-block;
+    transition: transform 180ms ease;
+  }
+  .ui-btn--secondary:hover .ui-btn__arrow {
+    transform: translateX(3px);
+  }
+</style>
