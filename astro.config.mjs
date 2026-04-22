@@ -20,7 +20,7 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://tomsoucy1.github.io',
-  base: '/Website',
+  site: 'https://tomsoucai.github.io',
+  base: '/agence-ia-website',
   integrations: [tailwind(), react()],
 });
