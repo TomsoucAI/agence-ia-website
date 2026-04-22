@@ -32,3 +32,19 @@ Thumbs.db
 
 .docs/
 
+# Claude Code workflow files
+CLAUDE.md
+.claude/
+
+# Internal content tracking — broadcasts incompleteness publicly
+CONTENT_TODO.md
+
+# Per-folder internal documentation
+src/README.md
+src/components/README.md
+src/components/sections/README.md
+src/components/ui/README.md
+src/components/islands/README.md
+src/content/_README.md
+specs/README.md
+
