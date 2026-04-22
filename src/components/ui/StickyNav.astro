@@ -1,0 +1,478 @@
+---
+/*
+ * StickyNav — translucent sticky anchor-navigation header.
+ *
+ * Renders at the top of every page that uses BaseLayout.astro. The bar stays
+ * stuck while scrolling and reads over whatever section sits behind it,
+ * thanks to a backdrop-blur + rgba background. This avoids fighting the
+ * Formation off-white inverted band: the nav adapts visually instead of
+ * being tied to either palette side.
+ *
+ * Desktop (≥768px):
+ *   - Horizontal row. Anchor links on the left, primary "Réserver un audit"
+ *     CTA on the right.
+ *
+ * Mobile (<768px):
+ *   - Pure-CSS checkbox hack. The hamburger toggles a full-screen overlay
+ *     containing the same anchor links + CTA. No JS framework, no hydration.
+ *
+ * Active-section scroll spy:
+ *   - A tiny inline script wires up one IntersectionObserver that watches
+ *     every [data-scroll-spy] section. When a section enters the band
+ *     defined by rootMargin "-40% 0px -50% 0px", the matching nav link
+ *     flips to aria-current="location" and the amber underline shows.
+ *
+ * Accessibility:
+ *   - role="navigation" + aria-label="Navigation principale".
+ *   - Hamburger is a labeled <button>-styled <label> paired with a hidden
+ *     checkbox. Keyboard users can toggle with Space/Enter on the visible
+ *     hamburger (wrapped in the label) and dismiss via Escape (inline script).
+ *   - Focus states visible across every interactive target.
+ */
+
+import { siteContent } from '../../content/site';
+
+const { meta } = siteContent;
+const { anchorNav, primaryCta } = meta;
+---
+
+<a href="#contenu-principal" class="stickynav-skip">
+  Aller au contenu principal
+</a>
+
+<header class="stickynav" role="navigation" aria-label="Navigation principale">
+  <div class="stickynav__inner">
+    <a href="#hero" class="stickynav__brand" aria-label="Agence IA — accueil">
+      <span class="stickynav__brand-mark">{meta.brandName}</span>
+    </a>
+
+    <input
+      type="checkbox"
+      id="stickynav-toggle"
+      class="stickynav__toggle"
+      aria-hidden="true"
+      tabindex="-1"
+    />
+
+    <label
+      for="stickynav-toggle"
+      class="stickynav__hamburger"
+      role="button"
+      tabindex="0"
+      aria-controls="stickynav-menu"
+      aria-label="Ouvrir le menu"
+    >
+      <span class="stickynav__hamburger-bar" aria-hidden="true"></span>
+      <span class="stickynav__hamburger-bar" aria-hidden="true"></span>
+      <span class="stickynav__hamburger-bar" aria-hidden="true"></span>
+    </label>
+
+    <nav
+      id="stickynav-menu"
+      class="stickynav__menu"
+      aria-label="Sections du site"
+    >
+      <ul class="stickynav__list">
+        {
+          anchorNav.map((link) => (
+            <li class="stickynav__item">
+              <a
+                href={link.href}
+                class="stickynav__link"
+                data-stickynav-link={link.href}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <a
+        href={primaryCta.href}
+        class="stickynav__cta"
+        data-cta-audit
+        aria-label={primaryCta.label}
+      >
+        {primaryCta.label}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* ------------------------------------------------------------------------
+   * Skip link — shown only on keyboard focus.
+   * ---------------------------------------------------------------------- */
+  .stickynav-skip {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-4);
+    z-index: 100;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    padding: var(--space-2) var(--space-4);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transform: translateY(-150%);
+    transition: transform 180ms ease;
+  }
+  .stickynav-skip:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Sticky header bar
+   * ---------------------------------------------------------------------- */
+  .stickynav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    width: 100%;
+    /* Translucent navy — leaves enough signal for the backdrop-filter to
+     * carry the mood of whatever section sits behind it. */
+    background-color: rgba(11, 27, 46, 0.82);
+    backdrop-filter: blur(12px) saturate(140%);
+    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    border-bottom: 1px solid var(--color-border);
+    font-family: var(--font-body);
+  }
+
+  /* If the viewport scrolls into a light-band (Formation), the border still
+   * reads and the accent dot on active-link colours the navigation. The
+   * translucent fill carries the colour from behind either way. */
+
+  .stickynav__inner {
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: var(--space-3) var(--space-6);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+
+  /* ------------------------------------------------------------------------
+   * Brand mark
+   * ---------------------------------------------------------------------- */
+  .stickynav__brand {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--text-lg);
+    letter-spacing: -0.01em;
+    color: var(--color-fg);
+    text-decoration: none;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    flex-shrink: 0;
+  }
+  .stickynav__brand:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+  .stickynav__brand-mark {
+    display: inline-block;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Menu (shared shell — responsive styles diverge below)
+   * ---------------------------------------------------------------------- */
+  .stickynav__menu {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .stickynav__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .stickynav__link {
+    position: relative;
+    font-size: var(--text-sm);
+    font-weight: 500;
+    color: var(--color-fg);
+    text-decoration: none;
+    padding: var(--space-2) 0;
+    letter-spacing: 0.01em;
+    transition: color 180ms ease;
+  }
+  .stickynav__link:hover {
+    color: var(--color-accent);
+  }
+  .stickynav__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 4px;
+    border-radius: var(--radius-sm);
+  }
+  /* Active-section indicator — set by the inline scroll-spy script. */
+  .stickynav__link[aria-current='location'] {
+    color: var(--color-accent);
+  }
+  .stickynav__link[aria-current='location']::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 2px;
+    background: var(--color-accent);
+    border-radius: var(--radius-sm);
+  }
+
+  /* ------------------------------------------------------------------------
+   * Primary CTA
+   * ---------------------------------------------------------------------- */
+  .stickynav__cta {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.55rem var(--space-4);
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-family: var(--font-body);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--color-accent);
+    transition:
+      background-color 180ms ease,
+      border-color 180ms ease;
+    white-space: nowrap;
+  }
+  .stickynav__cta:hover {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-soft);
+  }
+  .stickynav__cta:focus-visible {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+
+  /* ------------------------------------------------------------------------
+   * Hamburger — pure-CSS checkbox hack
+   * ---------------------------------------------------------------------- */
+  .stickynav__toggle {
+    /* Visually hidden but kept focusable so Space/Enter on the label toggles it. */
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+  }
+
+  .stickynav__hamburger {
+    display: none; /* shown only on mobile */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: rgba(245, 241, 234, 0.04);
+  }
+  .stickynav__hamburger:focus-within,
+  .stickynav__toggle:focus-visible + .stickynav__hamburger {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  .stickynav__hamburger-bar {
+    width: 20px;
+    height: 2px;
+    background: var(--color-fg);
+    border-radius: 1px;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+
+  /* Open-state: rotate bars into an X. */
+  .stickynav__toggle:checked ~ .stickynav__hamburger .stickynav__hamburger-bar:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+  .stickynav__toggle:checked ~ .stickynav__hamburger .stickynav__hamburger-bar:nth-child(2) {
+    opacity: 0;
+  }
+  .stickynav__toggle:checked ~ .stickynav__hamburger .stickynav__hamburger-bar:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* ------------------------------------------------------------------------
+   * Desktop (≥768px) — horizontal menu
+   * ---------------------------------------------------------------------- */
+  @media (min-width: 768px) {
+    .stickynav__hamburger {
+      display: none;
+    }
+    .stickynav__menu {
+      /* menu sits inline on the right */
+      display: flex;
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+   * Mobile (<768px) — full-screen overlay
+   * ---------------------------------------------------------------------- */
+  @media (max-width: 767px) {
+    .stickynav__hamburger {
+      display: inline-flex;
+    }
+
+    .stickynav__menu {
+      position: fixed;
+      inset: 0;
+      top: 0;
+      padding: var(--space-11) var(--space-6) var(--space-8);
+      background: var(--color-bg);
+      /* Solid on mobile overlay — translucent bar would read as broken there. */
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: var(--space-7);
+      transform: translateX(100%);
+      transition: transform 220ms ease;
+      pointer-events: none;
+      overflow-y: auto;
+    }
+
+    .stickynav__toggle:checked ~ .stickynav__menu {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    .stickynav__list {
+      flex-direction: column;
+      width: 100%;
+      gap: var(--space-5);
+    }
+
+    .stickynav__link {
+      font-size: var(--text-xl);
+      font-family: var(--font-display);
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+
+    .stickynav__cta {
+      align-self: stretch;
+      justify-content: center;
+      padding: var(--space-4) var(--space-5);
+      font-size: var(--text-base);
+    }
+
+    /* Lock scroll behind overlay when open. We do this purely in CSS via
+     * height:100vh + overflow on html. Cheap, no JS. */
+    :global(html:has(.stickynav__toggle:checked)) {
+      overflow: hidden;
+    }
+  }
+</style>
+
+<!--
+  Inline scroll-spy + mobile-Escape handler. Zero framework cost.
+-->
+<script is:inline>
+  (function () {
+    // -- Scroll-spy ---------------------------------------------------------
+    var links = document.querySelectorAll('[data-stickynav-link]');
+    if (links.length === 0) return;
+
+    // Map anchor href (e.g. "#services") -> link element for fast lookup.
+    var linkByHref = {};
+    links.forEach(function (l) {
+      var href = l.getAttribute('data-stickynav-link');
+      if (href) linkByHref[href] = l;
+    });
+
+    // Resolve target sections from link hrefs, keeping only those present in DOM.
+    var sections = [];
+    Object.keys(linkByHref).forEach(function (href) {
+      var id = href.slice(1);
+      var el = document.getElementById(id);
+      if (el) sections.push(el);
+    });
+
+    if (sections.length === 0 || typeof IntersectionObserver === 'undefined') return;
+
+    function clearCurrent() {
+      links.forEach(function (l) {
+        l.removeAttribute('aria-current');
+      });
+    }
+
+    function setCurrent(id) {
+      var link = linkByHref['#' + id];
+      if (!link) return;
+      clearCurrent();
+      link.setAttribute('aria-current', 'location');
+    }
+
+    var observer = new IntersectionObserver(
+      function (entries) {
+        // Pick the entry with the highest intersectionRatio currently in band.
+        var active = null;
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            if (!active || entry.intersectionRatio > active.intersectionRatio) {
+              active = entry;
+            }
+          }
+        });
+        if (active) setCurrent(active.target.id);
+      },
+      {
+        // Section headline sits in the upper-third of the viewport when active.
+        rootMargin: '-40% 0px -50% 0px',
+        threshold: [0, 0.25, 0.5, 0.75, 1],
+      }
+    );
+
+    sections.forEach(function (s) {
+      observer.observe(s);
+    });
+
+    // -- Mobile menu: close on anchor click + Escape key --------------------
+    var toggle = document.getElementById('stickynav-toggle');
+    if (toggle) {
+      links.forEach(function (l) {
+        l.addEventListener('click', function () {
+          toggle.checked = false;
+        });
+      });
+      var cta = document.querySelector('.stickynav__cta');
+      if (cta) {
+        cta.addEventListener('click', function () {
+          toggle.checked = false;
+        });
+      }
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && toggle.checked) {
+          toggle.checked = false;
+        }
+      });
+    }
+
+    // -- Keyboard support for the hamburger label ---------------------------
+    var hamburger = document.querySelector('.stickynav__hamburger');
+    if (hamburger && toggle) {
+      hamburger.addEventListener('keydown', function (e) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          toggle.checked = !toggle.checked;
+        }
+      });
+    }
+  })();
+</script>

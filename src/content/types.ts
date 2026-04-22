@@ -298,6 +298,16 @@ export interface SiteMeta {
   readonly analyticsSiteId: Resolvable<string>;
   readonly anchorNav: ReadonlyArray<NavLink>;
   readonly primaryCta: Cta;
+  /** SEO <title> — Quebec French, ~60 chars. */
+  readonly title: string;
+  /** Meta description — Quebec French, ~155 chars. */
+  readonly description: string;
+  /** OG image path, served from /public. */
+  readonly ogImage: string;
+  /** Plausible analytics site domain. When set to a non-TODO value, the script tag renders. */
+  readonly plausibleDomain: Resolvable<string>;
+  /** Calendly booking URL for the #reserver section. When TODO, the section falls back to a Placeholder. */
+  readonly calendlyUrl: Resolvable<string>;
 }
 
 // ---------------------------------------------------------------------------

@@ -1,0 +1,180 @@
+---
+/*
+ * Section: Reserver (§9 booking — Phase 6)
+ *
+ * The single booking section on the site. Every primary "Réserver un audit"
+ * CTA across the page anchors to #reserver.
+ *
+ * Behaviour:
+ *   - If meta.calendlyUrl is resolved (typeof string), render an empty
+ *     <div class="calendly-inline-widget"> and an inline loader script that
+ *     lazy-injects the Calendly external widget.js. The loader fires either
+ *     (a) when the section scrolls into view, or (b) when the user clicks
+ *     any [data-cta-audit] CTA anywhere on the page. This protects the
+ *     Lighthouse Performance score — no third-party JS until the user
+ *     shows intent.
+ *   - If meta.calendlyUrl is still a TODO sentinel, render a Placeholder
+ *     with a French fallback message pointing users to the contact email
+ *     (or a generic "contact us" line when the email is null).
+ *
+ * Content: SectionHeader + either the Calendly embed or the Placeholder.
+ */
+
+import { siteContent } from '../../content/site';
+import { isTodo } from '../../content/types';
+import SectionHeader from '../ui/SectionHeader.astro';
+import Placeholder from '../ui/Placeholder.astro';
+
+const { meta, footer } = siteContent;
+
+const calendlyResolved = !isTodo(meta.calendlyUrl);
+const calendlyUrl = calendlyResolved ? (meta.calendlyUrl as string) : null;
+
+// Fallback copy when Calendly isn't wired up yet.
+const fallbackTitle = 'Réservation en ligne — bientôt disponible';
+const fallbackBody = footer.contactEmail
+  ? `En attendant, écrivez-nous directement à ${footer.contactEmail}. On revient avec un créneau d'audit dans les 48 h ouvrables.`
+  : "En attendant, contactez-nous via le Discord ou nos profils LinkedIn (liens dans le pied de page). On revient avec un créneau d'audit dans les 48 h ouvrables.";
+---
+
+<section id="reserver" aria-label="Réserver un audit" class="reserver">
+  <div class="reserver__inner">
+    <SectionHeader
+      eyebrow="Réserver un audit"
+      headline="Un créneau d'une heure. Aucun engagement ensuite."
+      lede="On parcourt vos workflows ensemble, on identifie les trois candidats d'automatisation les plus rentables, et on vous laisse repartir avec un plan — qu'on aille plus loin ou non."
+      level="h2"
+      scale="section"
+      align="center"
+      maxWidth={46}
+      class="reserver__header"
+    />
+
+    {calendlyUrl ? (
+      <div class="reserver__embed-wrap">
+        <div
+          class="calendly-inline-widget reserver__embed"
+          data-url={calendlyUrl}
+          data-reserver-embed
+          aria-label="Calendrier de réservation Calendly"
+        ></div>
+      </div>
+    ) : (
+      <div class="reserver__fallback">
+        <Placeholder title={fallbackTitle} body={fallbackBody} />
+      </div>
+    )}
+  </div>
+</section>
+
+<style>
+  .reserver {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .reserver__inner {
+    max-width: 56rem;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .reserver__header {
+    margin: 0 auto var(--space-9) auto;
+    text-align: center;
+  }
+
+  .reserver__embed-wrap {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: rgba(245, 241, 234, 0.02);
+    padding: var(--space-2);
+    /* Reserve minimum vertical space so the layout doesn't CLS when
+     * Calendly's iframe injects. */
+    min-height: 640px;
+  }
+
+  .reserver__embed {
+    min-width: 100%;
+    height: 640px;
+  }
+
+  .reserver__fallback {
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 640px) {
+    .reserver {
+      padding: var(--space-10) var(--space-5);
+    }
+    .reserver__embed-wrap,
+    .reserver__embed {
+      min-height: 720px;
+      height: 720px;
+    }
+  }
+</style>
+
+{calendlyUrl && (
+  <script is:inline>
+    (function () {
+      var injected = false;
+      function inject() {
+        if (injected) return;
+        injected = true;
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://assets.calendly.com/assets/external/widget.css';
+        document.head.appendChild(link);
+        var script = document.createElement('script');
+        script.src = 'https://assets.calendly.com/assets/external/widget.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
+
+      // Trigger A: user clicks any "Réserver un audit" CTA.
+      var ctaButtons = document.querySelectorAll('[data-cta-audit]');
+      ctaButtons.forEach(function (btn) {
+        btn.addEventListener(
+          'click',
+          function () {
+            inject();
+          },
+          { once: true }
+        );
+      });
+
+      // Trigger B: the reserver section scrolls into view.
+      var target = document.querySelector('[data-reserver-embed]');
+      if (target && typeof IntersectionObserver !== 'undefined') {
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (entry.isIntersecting) {
+                inject();
+                io.disconnect();
+              }
+            });
+          },
+          { rootMargin: '200px 0px' }
+        );
+        io.observe(target);
+      } else {
+        // Fallback: no IO support, load on first user scroll or after 3s idle.
+        var fired = false;
+        function kick() {
+          if (fired) return;
+          fired = true;
+          inject();
+          window.removeEventListener('scroll', kick);
+        }
+        window.addEventListener('scroll', kick, { passive: true, once: true });
+        setTimeout(kick, 3000);
+      }
+    })();
+  </script>
+)}

@@ -42,9 +42,24 @@ export const siteContent: SiteContent = {
     ],
     primaryCta: {
       label: 'Réserver un audit',
-      href: '#final-cta',
+      href: '#reserver',
       variant: 'primary',
     },
+    // SEO <title>. Derived from hero eyebrow + positioning. ~52 chars.
+    title: 'Agence IA — Agents IA déployés au Québec, en français',
+    // Meta description — ~155 chars, Quebec French, derived from the hero subhead
+    // and the four-principles positioning. Front-loaded with the audit offer.
+    description:
+      "Agence IA québécoise. Systèmes IA locaux, observables et résilients. Premier pas : un audit d'une semaine à 500–1 500 $. Livraison en français.",
+    // OG image path — asset does not yet exist (Phase 6 follow-up).
+    ogImage: '/og-image.png',
+    // TODO — Plausible site domain (e.g. "agence-ia.ca"). When set, the Plausible
+    // script tag renders in BaseLayout. Until then, the script is NOT injected.
+    plausibleDomain: TODO,
+    // TODO — Calendly inline-embed URL (e.g. "https://calendly.com/agence-ia/audit").
+    // When set, the #reserver section renders the embed. When TODO, it renders a
+    // Placeholder with a fallback message.
+    calendlyUrl: TODO,
   },
 
   // -------------------------------------------------------------------------
@@ -61,7 +76,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -108,7 +123,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -155,7 +170,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -181,7 +196,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -221,7 +236,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -342,7 +357,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -388,7 +403,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -428,7 +443,7 @@ export const siteContent: SiteContent = {
     ctas: {
       primary: {
         label: 'Réserver un audit',
-        href: '#final-cta',
+        href: '#reserver',
         variant: 'primary',
       },
       secondary: {
@@ -567,7 +582,7 @@ export const siteContent: SiteContent = {
       'Faible risque, livrable concret, aucune obligation de poursuivre.',
     cta: {
       label: 'Réserver un audit',
-      href: '#final-cta',
+      href: '#reserver',
       variant: 'primary',
     },
   },
@@ -586,7 +601,7 @@ export const siteContent: SiteContent = {
       { label: 'FAQ', href: '#faq' },
     ],
     legal: [
-      { label: 'Contact', href: '#final-cta' },
+      { label: 'Contact', href: '#reserver' },
       { label: 'Mentions légales', href: '/mentions-legales' },
       {
         label: 'Politique de confidentialité',

@@ -10,6 +10,13 @@
  *
  * Secondary variant shows a small arrow glyph that animates on hover,
  * matching the HeroA Direction A reference.
+ *
+ * Audit CTA tagging (Phase 6):
+ *   Any primary button whose href starts with "#reserver" (the new Calendly
+ *   section) auto-receives a `data-cta-audit` attribute. This powers the
+ *   lazy-load trigger for the Calendly script in Reserver.astro — the embed
+ *   only materialises once the user shows intent. Secondary "voir notre
+ *   framework" type CTAs never receive the attribute.
  */
 
 interface Props {
@@ -27,12 +34,23 @@ const {
   ariaLabel,
   class: extraClass,
 } = Astro.props;
+
+// Audit-CTA detection: primary variant pointing at the booking anchor OR at an
+// external URL when bookingUrl is resolved. The anchor form is the steady-state
+// content-layer href, the URL form is set at render time in FinalCta.astro when
+// `meta.bookingUrl` resolves. Either way the tag earns the lazy-load trigger.
+const isAuditCta =
+  variant === 'primary' &&
+  (href === '#reserver' ||
+    href.startsWith('#reserver') ||
+    /\/\/(?:[^\/]*\.)?calendly\.com\//i.test(href));
 ---
 
 <a
   href={href}
   aria-label={ariaLabel ?? label}
   class:list={["ui-btn", `ui-btn--${variant}`, extraClass]}
+  data-cta-audit={isAuditCta ? '' : undefined}
 >
   <span class="ui-btn__label">{label}</span>
   {variant === 'secondary' && (

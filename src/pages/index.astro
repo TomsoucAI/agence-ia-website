@@ -4,13 +4,19 @@
  *
  * Full composition per spec §3 section order:
  *   Hero → Problem → Approach → Framework → BuiltFor → Services →
- *   Process → Outcomes → Formation → Team → Faq → FinalCta → Footer.
+ *   Process → Outcomes → Formation → Team → Faq → FinalCta → Reserver → Footer.
  *
- * Phase 5 adds the last five sections; Phase 6 will add the sticky top
- * nav and the legal subpages.
+ * Phase 6 adds:
+ *   - StickyNav (lives in BaseLayout so every page gets it)
+ *   - Reserver section at the bottom, id="reserver" — anchor target of every
+ *     primary "Réserver un audit" CTA across the site
+ *   - Meta + OG + Twitter card tags via BaseLayout's meta prop chain
+ *   - Legal subpages (mentions-legales, politique-confidentialite) as siblings
  *
- * <title> and <meta description> are in Quebec French, sourced from
- * the content layer where possible and site-level meta otherwise.
+ * <title> and <meta description> come from siteContent.meta (Quebec French).
+ * BaseLayout falls back to site-level meta when no per-page override is given,
+ * so we could omit `title`/`description` here — passing them keeps intent
+ * explicit and lets the homepage evolve without relying on the fallback.
  */
 
 import BaseLayout from '../layouts/BaseLayout.astro';
@@ -26,11 +32,12 @@ import Formation from '../components/sections/Formation.astro';
 import Team from '../components/sections/Team.astro';
 import Faq from '../components/sections/Faq.astro';
 import FinalCta from '../components/sections/FinalCta.astro';
+import Reserver from '../components/sections/Reserver.astro';
 import Footer from '../components/sections/Footer.astro';
 import { siteContent } from '../content/site';
 
-const pageTitle = `${siteContent.meta.brandName} — ${siteContent.hero.eyebrow}`;
-const pageDescription = siteContent.hero.subhead;
+const pageTitle = siteContent.meta.title;
+const pageDescription = siteContent.meta.description;
 ---
 
 <BaseLayout title={pageTitle} description={pageDescription}>
@@ -47,6 +54,7 @@ const pageDescription = siteContent.hero.subhead;
     <Team />
     <Faq />
     <FinalCta />
+    <Reserver />
   </main>
   <Footer />
 </BaseLayout>

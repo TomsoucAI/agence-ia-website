@@ -9,3 +9,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/*
+ * Astro hydration wrappers.
+ *
+ * When a React island is rendered as a direct child of another element
+ * (see ScrollReveal wrapping a list item), Astro inserts an <astro-island>
+ * custom element around the hydrated tree. `display: contents` makes that
+ * wrapper transparent to layout so grid/flex rhythm of the parent isn't
+ * disrupted. It does NOT fix the Lighthouse "list"/"listitem" axe rules —
+ * those check DOM tree structure, which still shows <astro-island> between
+ * the list and its items. That structural fix is documented in the Phase 6
+ * summary as a follow-up.
+ */
+astro-island {
+  display: contents;
+}

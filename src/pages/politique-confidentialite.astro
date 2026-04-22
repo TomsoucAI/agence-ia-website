@@ -1,0 +1,297 @@
+---
+/*
+ * Page: Politique de confidentialité (Loi 25-compliant)
+ *
+ * Structured around the requirements of the Quebec Loi 25 (modernisation
+ * de la protection des renseignements personnels). The site itself collects
+ * zero personally-identifiable data — analytics are aggregate via Plausible,
+ * which uses no cookies and stores no personal identifiers.
+ *
+ * Sections per spec §5:
+ *   1. Données collectées
+ *   2. Finalités
+ *   3. Conservation des données
+ *   4. Droits sous Loi 25 (accès, rectification, suppression, portabilité)
+ *   5. Coordonnées de la personne responsable (TODO sentinel guard)
+ *   6. Date de mise à jour (auto-render fr-CA)
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import SectionHeader from '../components/ui/SectionHeader.astro';
+import { siteContent } from '../content/site';
+import { isTodo } from '../content/types';
+
+const { footer, meta } = siteContent;
+
+const contactEmail = footer.contactEmail;
+const plausibleResolved = !isTodo(meta.plausibleDomain);
+
+const updateDate = new Intl.DateTimeFormat('fr-CA', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(new Date());
+
+const pageTitle = `Politique de confidentialité — ${meta.brandName}`;
+const pageDescription =
+  "Politique de confidentialité d'Agence IA, conforme à la Loi 25 du Québec. Analytics agrégées, aucun cookie, aucune donnée personnelle.";
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  pathname="/politique-confidentialite"
+>
+  <main class="legal">
+    <article class="legal__inner">
+      <SectionHeader
+        eyebrow="Politique de confidentialité"
+        headline="Aucun cookie. Aucune donnée personnelle. Mesure d'audience agrégée uniquement."
+        level="h1"
+        scale="section"
+        maxWidth={56}
+        class="legal__header"
+      />
+
+      <p class="legal__meta">Dernière mise à jour : {updateDate}.</p>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="pc-collecte">
+        <Eyebrow text="1. Données collectées" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="pc-collecte">
+          Quelles données sont collectées
+        </h2>
+        <p class="legal__body">
+          Ce site ne recueille <strong>aucune donnée personnelle</strong>
+          directement. Nous ne déposons pas de témoins (cookies), nous
+          n'utilisons pas d'outils publicitaires, et nous ne traçons pas les
+          visiteurs entre sessions.
+        </p>
+        {plausibleResolved ? (
+          <p class="legal__body">
+            Nous utilisons <strong>Plausible Analytics</strong>, un service
+            européen de mesure d'audience respectueux de la vie privée.
+            Plausible comptabilise les visites de façon <em>agrégée</em>
+            (nombre de visiteurs, pages consultées, référents) sans utiliser
+            de cookies et sans stocker d'identifiants personnels. Les
+            adresses IP sont anonymisées avant traitement.
+          </p>
+        ) : (
+          <p class="legal__body">
+            Aucun outil d'analytique tiers n'est actuellement intégré au
+            site. Si nous activons Plausible Analytics (européen, sans
+            cookies, sans données personnelles), cette page sera mise à jour
+            pour le mentionner.
+          </p>
+        )}
+        <p class="legal__body">
+          Si vous nous écrivez par courriel ou via un formulaire de
+          réservation, les renseignements que vous nous communiquez
+          volontairement (nom, adresse courriel, contenu du message) sont
+          traités uniquement pour répondre à votre demande.
+        </p>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="pc-finalites">
+        <Eyebrow text="2. Finalités" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="pc-finalites">
+          Pourquoi nous mesurons l'audience
+        </h2>
+        <p class="legal__body">
+          La mesure d'audience sert <strong>uniquement</strong> à comprendre
+          quelles sections du site répondent aux besoins de nos lecteurs, et
+          à améliorer le contenu éditorial. Les données agrégées ne sont
+          jamais revendues ni partagées avec des tiers à des fins publicitaires.
+        </p>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="pc-conservation">
+        <Eyebrow text="3. Conservation" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="pc-conservation">
+          Conservation des données
+        </h2>
+        <p class="legal__body">
+          Les statistiques d'audience agrégées sont conservées pendant
+          <strong>24 mois</strong>, après quoi elles sont automatiquement
+          purgées. Les échanges courriel entamés avec Agence IA sont
+          conservés le temps nécessaire à la relation d'affaires, puis
+          archivés ou supprimés sur demande.
+        </p>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="pc-droits">
+        <Eyebrow text="4. Vos droits" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="pc-droits">
+          Vos droits sous la Loi 25
+        </h2>
+        <p class="legal__body">
+          Conformément à la <strong>Loi 25</strong> (Loi modernisant des
+          dispositions législatives en matière de protection des
+          renseignements personnels), vous disposez des droits suivants&nbsp;:
+        </p>
+        <ul class="legal__list">
+          <li>
+            <strong>Droit d'accès</strong> — obtenir une copie des
+            renseignements personnels que nous détenons à votre sujet.
+          </li>
+          <li>
+            <strong>Droit de rectification</strong> — corriger tout
+            renseignement inexact, incomplet ou équivoque.
+          </li>
+          <li>
+            <strong>Droit de suppression</strong> — demander l'effacement
+            des renseignements vous concernant, sous réserve des obligations
+            légales de conservation.
+          </li>
+          <li>
+            <strong>Droit à la portabilité</strong> — recevoir, dans un
+            format technologique structuré et couramment utilisé, les
+            renseignements personnels que vous nous avez communiqués.
+          </li>
+          <li>
+            <strong>Droit de retrait du consentement</strong> — retirer à
+            tout moment votre consentement à la communication ou à
+            l'utilisation de vos renseignements.
+          </li>
+        </ul>
+        <p class="legal__body">
+          Pour exercer l'un de ces droits, adressez une demande écrite à la
+          personne responsable de la protection des renseignements personnels
+          (section 5). Une réponse vous sera transmise dans les
+          <strong>30 jours</strong> suivant la réception de la demande.
+        </p>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="pc-responsable">
+        <Eyebrow text="5. Personne responsable" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="pc-responsable">
+          Coordonnées de la personne responsable
+        </h2>
+        <p class="legal__body">
+          La personne responsable de la protection des renseignements
+          personnels au sein d'Agence IA est
+          <strong>Tom Soucy</strong>, cofondateur.
+        </p>
+        {contactEmail ? (
+          <p class="legal__body">
+            Toute demande relative à la Loi 25 peut être adressée par courriel à
+            <a href={`mailto:${contactEmail}`} class="legal__link">
+              {contactEmail}
+            </a>.
+          </p>
+        ) : (
+          <p class="legal__body">
+            Un courriel de contact officiel sera publié ici prochainement.
+            En attendant, toute demande relative à la Loi 25 peut être
+            soumise via la page
+            <a href="/#reserver" class="legal__link">Réserver un audit</a>
+            en précisant l'objet « Loi 25 — demande formelle ».
+          </p>
+        )}
+      </section>
+
+      <p class="legal__back">
+        <a href="/" class="legal__link">&larr; Retour à l'accueil</a>
+      </p>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    min-height: 70vh;
+  }
+
+  .legal__inner {
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+
+  .legal__header {
+    margin-bottom: var(--space-5);
+  }
+
+  .legal__meta {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    margin: 0 0 var(--space-10) 0;
+    letter-spacing: 0.02em;
+  }
+
+  .legal__section {
+    margin-bottom: var(--space-10);
+  }
+
+  :global(.legal__section-eyebrow) {
+    margin-bottom: var(--space-4);
+  }
+
+  .legal__section-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--color-fg);
+    margin: 0 0 var(--space-5) 0;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  }
+
+  .legal__body {
+    font-size: var(--text-base);
+    line-height: 1.65;
+    color: var(--color-fg);
+    margin: 0 0 var(--space-4) 0;
+    max-width: 38rem;
+  }
+
+  .legal__body strong {
+    font-weight: 600;
+    color: var(--color-fg);
+  }
+
+  .legal__list {
+    margin: 0 0 var(--space-5) 0;
+    padding-left: var(--space-5);
+    color: var(--color-fg);
+    font-size: var(--text-base);
+    line-height: 1.65;
+  }
+  .legal__list li {
+    margin-bottom: var(--space-3);
+  }
+
+  .legal__link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .legal__link:hover {
+    color: var(--color-accent-soft);
+  }
+  .legal__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  .legal__back {
+    margin-top: var(--space-10);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 640px) {
+    .legal {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>

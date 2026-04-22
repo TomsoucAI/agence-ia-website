@@ -1,0 +1,246 @@
+---
+/*
+ * Page: Mentions légales (Quebec-compliant)
+ *
+ * Wrapped in BaseLayout so the sticky nav, fonts, tokens, and meta tags all
+ * cascade — the legal pages must not feel like leaving the site.
+ *
+ * Sections per spec §5:
+ *   1. Identité de l'entreprise (brand + founders)
+ *   2. Coordonnées (contact email — TODO sentinel guard + fallback)
+ *   3. Hébergement (GitHub Pages, GitHub infrastructure)
+ *   4. Droit applicable (lois du Québec et du Canada)
+ *
+ * Reuses Eyebrow + SectionHeader so the page reads as a first-class Agence IA
+ * surface, not an afterthought.
+ */
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Eyebrow from '../components/ui/Eyebrow.astro';
+import SectionHeader from '../components/ui/SectionHeader.astro';
+import { siteContent } from '../content/site';
+import { isTodo } from '../content/types';
+
+const { team, footer, meta } = siteContent;
+
+const founders = team.founders;
+
+const contactEmail = footer.contactEmail;
+// Update date — rendered from today's date, formatted in Canadian French.
+const updateDate = new Intl.DateTimeFormat('fr-CA', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(new Date());
+
+const pageTitle = `Mentions légales — ${meta.brandName}`;
+const pageDescription =
+  "Mentions légales d'Agence IA : identité, coordonnées, hébergement et droit applicable.";
+---
+
+<BaseLayout
+  title={pageTitle}
+  description={pageDescription}
+  pathname="/mentions-legales"
+>
+  <main class="legal">
+    <article class="legal__inner">
+      <SectionHeader
+        eyebrow="Mentions légales"
+        headline="Qui nous sommes, où nous opérons, et sous quelle loi."
+        level="h1"
+        scale="section"
+        maxWidth={52}
+        class="legal__header"
+      />
+
+      <p class="legal__meta">Dernière mise à jour : {updateDate}.</p>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="ml-identite">
+        <Eyebrow text="1. Identité" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="ml-identite">
+          Identité de l'entreprise
+        </h2>
+        <p class="legal__body">
+          Le présent site web est édité par <strong>{meta.brandName}</strong>,
+          une agence de services-conseils en intelligence artificielle basée
+          au Québec (Canada). Agence IA livre des audits, des implémentations
+          et des mandats de rétention en langue française, avec un accent sur
+          les systèmes déployés localement pour les données sensibles.
+        </p>
+        <p class="legal__body">Fondateurs&nbsp;:</p>
+        <ul class="legal__list">
+          {
+            founders.map((f) => {
+              const lastName = isTodo(f.lastName) ? null : f.lastName;
+              const fullName = lastName ? `${f.firstName} ${lastName}` : f.firstName;
+              return (
+                <li>
+                  <strong>{fullName}</strong> — {f.role}
+                </li>
+              );
+            })
+          }
+        </ul>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="ml-coordonnees">
+        <Eyebrow text="2. Coordonnées" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="ml-coordonnees">
+          Coordonnées
+        </h2>
+        {contactEmail ? (
+          <p class="legal__body">
+            Pour toute question relative à ce site ou à nos services&nbsp;:
+            <a href={`mailto:${contactEmail}`} class="legal__link">
+              {contactEmail}
+            </a>.
+          </p>
+        ) : (
+          <p class="legal__body">
+            Un courriel de contact officiel sera publié ici prochainement.
+            En attendant, vous pouvez joindre l'équipe par le biais de la page
+            <a href="/#reserver" class="legal__link">Réserver un audit</a>
+            ou via la communauté Discord (liens dans le pied de page).
+          </p>
+        )}
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="ml-hebergement">
+        <Eyebrow text="3. Hébergement" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="ml-hebergement">
+          Hébergement
+        </h2>
+        <p class="legal__body">
+          Ce site est hébergé par <strong>GitHub Pages</strong>, un service
+          de publication statique opéré par GitHub, Inc., 88 Colin P. Kelly Jr.
+          Street, San Francisco, CA 94107, États-Unis. Les fichiers publiés
+          sont servis depuis l'infrastructure de GitHub&nbsp;; le contenu
+          éditorial reste la propriété d'Agence IA.
+        </p>
+        <p class="legal__body">
+          Le choix d'un hébergement statique évite toute collecte de données
+          personnelles côté serveur (pas de base de données, pas de session
+          utilisateur, pas de journalisation personnalisée).
+        </p>
+      </section>
+
+      {/* ----------------------------------------------------------------- */}
+      <section class="legal__section" aria-labelledby="ml-droit">
+        <Eyebrow text="4. Droit applicable" class="legal__section-eyebrow" />
+        <h2 class="legal__section-title" id="ml-droit">
+          Droit applicable
+        </h2>
+        <p class="legal__body">
+          Le présent site et toute relation contractuelle subséquente avec
+          Agence IA sont régis par les <strong>lois du Québec</strong> et
+          les <strong>lois du Canada</strong> applicables. Les tribunaux du
+          district judiciaire de Québec ont compétence exclusive pour tout
+          litige relatif au site ou à son contenu, sauf disposition
+          impérative contraire.
+        </p>
+      </section>
+
+      <p class="legal__back">
+        <a href="/" class="legal__link">&larr; Retour à l'accueil</a>
+      </p>
+    </article>
+  </main>
+</BaseLayout>
+
+<style>
+  .legal {
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-body);
+    padding: var(--space-12) var(--space-6);
+    min-height: 70vh;
+  }
+
+  .legal__inner {
+    max-width: 44rem;
+    margin: 0 auto;
+  }
+
+  .legal__header {
+    margin-bottom: var(--space-5);
+  }
+
+  .legal__meta {
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+    margin: 0 0 var(--space-10) 0;
+    letter-spacing: 0.02em;
+  }
+
+  .legal__section {
+    margin-bottom: var(--space-10);
+  }
+
+  :global(.legal__section-eyebrow) {
+    margin-bottom: var(--space-4);
+  }
+
+  .legal__section-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--text-2xl);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+    color: var(--color-fg);
+    margin: 0 0 var(--space-5) 0;
+    font-variation-settings: 'opsz' 144, 'SOFT' 30;
+  }
+
+  .legal__body {
+    font-size: var(--text-base);
+    line-height: 1.65;
+    color: var(--color-fg);
+    margin: 0 0 var(--space-4) 0;
+    max-width: 38rem;
+  }
+
+  .legal__body strong {
+    font-weight: 600;
+    color: var(--color-fg);
+  }
+
+  .legal__list {
+    margin: 0 0 var(--space-5) 0;
+    padding-left: var(--space-5);
+    color: var(--color-fg);
+    font-size: var(--text-base);
+    line-height: 1.65;
+  }
+  .legal__list li {
+    margin-bottom: var(--space-3);
+  }
+
+  .legal__link {
+    color: var(--color-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .legal__link:hover {
+    color: var(--color-accent-soft);
+  }
+  .legal__link:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+  }
+
+  .legal__back {
+    margin-top: var(--space-10);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 640px) {
+    .legal {
+      padding: var(--space-10) var(--space-5);
+    }
+  }
+</style>
