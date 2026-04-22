@@ -1,0 +1,72 @@
+/*
+ * Agence IA — design tokens.
+ *
+ * This file is the single source of truth for design tokens consumed by
+ * Tailwind theme extensions and component styles. Values land here after
+ * the design pass. Until then, every custom property is declared empty
+ * so the cascade stays predictable.
+ *
+ * Design pass constraints (from build plan):
+ *   - Blue-locked dominant palette: deep navy or sophisticated slate-blue.
+ *     NOT bright, cyan, or electric blues.
+ *   - No gradients (spec §6).
+ *   - Single accent color + restrained palette.
+ *   - Typography pair: one display, one body.
+ *
+ * Naming convention: kebab-case, prefixed by category. Do not introduce
+ * semantic aliases (e.g. --color-primary) until the palette is chosen —
+ * keeping raw tokens + semantic tokens separate prevents drift.
+ */
+
+:root {
+  /* -----------------------------------------------------------------------
+   * Colors — deep navy / slate-blue base + single accent.
+   * To be filled during design pass.
+   * --------------------------------------------------------------------- */
+  --color-bg: ;
+  --color-fg: ;
+  --color-accent: ;
+  --color-muted: ;
+
+  /* -----------------------------------------------------------------------
+   * Typography — one display face, one body face.
+   * To be filled during design pass.
+   * --------------------------------------------------------------------- */
+  --font-display: ;
+  --font-body: ;
+
+  /* Type scale — filled during design pass. */
+  --text-xs: ;
+  --text-sm: ;
+  --text-base: ;
+  --text-lg: ;
+  --text-xl: ;
+  --text-2xl: ;
+  --text-3xl: ;
+  --text-4xl: ;
+  --text-5xl: ;
+  --text-6xl: ;
+
+  /* -----------------------------------------------------------------------
+   * Spacing scale — 1 through 12, filled during design pass.
+   * --------------------------------------------------------------------- */
+  --space-1: ;
+  --space-2: ;
+  --space-3: ;
+  --space-4: ;
+  --space-5: ;
+  --space-6: ;
+  --space-7: ;
+  --space-8: ;
+  --space-9: ;
+  --space-10: ;
+  --space-11: ;
+  --space-12: ;
+
+  /* -----------------------------------------------------------------------
+   * Radii — filled during design pass.
+   * --------------------------------------------------------------------- */
+  --radius-sm: ;
+  --radius-md: ;
+  --radius-lg: ;
+}

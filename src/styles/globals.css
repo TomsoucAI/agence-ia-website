@@ -1,0 +1,11 @@
+/*
+ * Agence IA — global styles.
+ * Loaded once from the base layout. Imports tokens + Tailwind layers.
+ * Component-specific styles should not live here; keep this file thin.
+ */
+
+@import './tokens.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
